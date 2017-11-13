@@ -1,0 +1,18 @@
+name: traildb
+version: 0.0.1
+
+authors:
+  - Joey Robert <joey@joeyrobert.org>
+
+development_dependencies:
+  minitest:
+    github: ysbaddaden/minitest.cr
+    branch: master
+
+targets:
+  shards:
+    main: src/mp.cr
+
+crystal: 0.23.1
+
+license: MIT
