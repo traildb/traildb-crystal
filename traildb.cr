@@ -14,7 +14,7 @@ lib LibTrailDB
   struct TdbEvent
     timestamp : UInt64
     num_items : UInt64
-    items : Pointer(TdbItem)
+    items : TdbItem
   end
 
   union TdbOptValue
@@ -74,10 +74,23 @@ lib LibTrailDB
   fun tdb_set_trail_opt(Tdb, UInt64, UInt32, TdbOptValue) : TdbError
 end
 
+# Because Crystal's `pointerof` doesn't inspect external libraries
+# Use a C wrapper function to get the pointer to the TrailDB Event items
+# https://github.com/crystal-lang/crystal/issues/4845
+@[Link(ldflags: "-ltraildb_wrapper -L#{__DIR__}")]
+lib LibTrailDBWrapper
+  fun tdb_event_item_pointer(LibTrailDB::TdbEvent) : TdbItem*
+end
+
 # Crystal Library syntactic sugar
 alias TrailDBEvent = Hash(String, String)
 
-def uuid_raw(uuid : String) : Array(UInt8)
+def uuid_raw(uuid : String) : Bytes
+  uuid.hexbytes
+end
+
+def uuid_hex(uuid : Bytes)
+  uuid.hexstring
 end
 
 class TrailDBException < Exception
@@ -86,13 +99,13 @@ end
 class TrailDBEventIterator
   include Iterator(TrailDBEvent)
   @traildb : TrailDB
-  @trailid : UInt64
+  @trail_id : UInt64
   @cursor : TdbCursor
 
-  def initialize(@traildb : TrailDB, @trailid : UInt64)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64)
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
-    if LibTrailDB.tdb_get_trail(@cursor, @trailid) != 0
-      raise TrailDBException.new("Error getting trail #{@trailid}")
+    if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
+      raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
   end
 
@@ -106,28 +119,22 @@ class TrailDBEventIterator
     if event.null?
       stop
     else
+      # Order of these two lines is crucial for some reason.
+      item = LibTrailDBWrapper.tdb_event_item_pointer(event.value)
       items = TrailDBEvent.new
-      puts event.value
-      # puts event.address, , event.value.num_items
-      # puts event.value.timestamp
-      # puts event.value.num_items
-      # puts event.value.items.address
-      # if event.value.items.address != 1
-      # puts event.value.items.to_slice(event.value.num_items)
-      # end
 
-      # puts event.value
-      # puts event.value.num_items
-      # puts event.value
-      # event.value.num_items.times do |item_offset|
-      #   # puts event.value.items[item_offset]
-      #   # puts @traildb.fields[item_offset]
+      item.to_slice(event.value.num_items).each_with_index do |i, idx|
+        items[@traildb.fields[idx + 1]] = @traildb.get_item_value(i)
+      end
 
-      #   puts @traildb.get_item_value(event.value.items[item_offset])
-      #   items[@traildb.fields[item_offset]] = @traildb.get_item_value(event.value.items[item_offset])
-      # end
+      {event.value.timestamp, items}
+    end
+  end
 
-      items
+  def rewind
+    @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
+    if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
+      raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
   end
 end
@@ -215,6 +222,11 @@ class TrailDB
 
   def trails
     TrailDBTrailIterator.new(self)
+  end
+
+  def [](uuid)
+    # Return a cursor for the given UUID or Trail ID.
+    TrailDBEventIterator.new(self, self.get_trail_id(uuidish))
   end
 
   def field(fieldish : String) : TdbField
@@ -314,5 +326,8 @@ t = TrailDB.new("/mnt/data/wikipedia-history-small.tdb")
 t.trails.each_with_index do |trail, i|
   trail.each do |event|
     # puts "event #{event}"
+  end
+  if i % 10000 == 0
+    puts i
   end
 end
