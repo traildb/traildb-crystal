@@ -12,7 +12,8 @@ alias TdbChar = UInt8
 @[Link("traildb")]
 lib LibTrailDB
   struct TdbEvent
-    timestamp, num_items : UInt64
+    timestamp : UInt64
+    num_items : UInt64
     items : Pointer(TdbItem)
   end
 
@@ -32,7 +33,7 @@ lib LibTrailDB
   fun tdb_open(Tdb, Pointer(TdbChar)) : TdbError
   fun tdb_close(Tdb)
 
-  fun tdb_lexicon_size(Tdb, TdbField) : TdbError
+  fun tdb_lexicon_size(Tdb, TdbField) : TdbVal
 
   fun tdb_get_field(Tdb, Pointer(TdbChar)) : TdbError
   fun tdb_get_field_name(Tdb, TdbField) : Pointer(TdbChar)
@@ -55,7 +56,7 @@ lib LibTrailDB
   fun tdb_version(Tdb) : UInt64
 
   fun tdb_cursor_new(Tdb) : TdbCursor
-  fun tdb_cursor_free(Tdb)
+  fun tdb_cursor_free(TdbCursor)
   fun tdb_cursor_next(TdbCursor) : Pointer(TdbEvent)
   fun tdb_get_trail(TdbCursor, UInt64) : TdbError
   fun tdb_get_trail_length(TdbCursor) : UInt64
@@ -76,47 +77,106 @@ end
 # Crystal Library syntactic sugar
 alias TrailDBEvent = Hash(String, String)
 
-# def uuid_raw(uuid : String)
-# end
+def uuid_raw(uuid : String) : Array(UInt8)
+end
 
 class TrailDBException < Exception
 end
 
-class TrailDBEvents
+class TrailDBEventIterator
   include Iterator(TrailDBEvent)
+  @traildb : TrailDB
+  @trailid : UInt64
+  @cursor : TdbCursor
 
-  def initialize(@cursor : TdbCursor)
+  def initialize(@traildb : TrailDB, @trailid : UInt64)
+    @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
+    if LibTrailDB.tdb_get_trail(@cursor, @trailid) != 0
+      raise TrailDBException.new("Error getting trail #{@trailid}")
+    end
+  end
+
+  def finalize
+    LibTrailDB.tdb_cursor_free(@cursor)
   end
 
   def next
     event = LibTrailDB.tdb_cursor_next(@cursor)
 
-    if !event
+    if event.null?
       stop
+    else
+      items = TrailDBEvent.new
+      puts event.value
+      # puts event.address, , event.value.num_items
+      # puts event.value.timestamp
+      # puts event.value.num_items
+      # puts event.value.items.address
+      # if event.value.items.address != 1
+      # puts event.value.items.to_slice(event.value.num_items)
+      # end
+
+      # puts event.value
+      # puts event.value.num_items
+      # puts event.value
+      # event.value.num_items.times do |item_offset|
+      #   # puts event.value.items[item_offset]
+      #   # puts @traildb.fields[item_offset]
+
+      #   puts @traildb.get_item_value(event.value.items[item_offset])
+      #   items[@traildb.fields[item_offset]] = @traildb.get_item_value(event.value.items[item_offset])
+      # end
+
+      items
+    end
+  end
+end
+
+class TrailDBTrailIterator
+  include Iterator(TrailDBEventIterator)
+  @traildb : TrailDB
+  @curr : UInt64
+
+  def initialize(@traildb : TrailDB)
+    @curr = 0_u64
+  end
+
+  def next
+    if @curr >= @traildb.num_trails
+      stop
+    else
+      val = TrailDBEventIterator.new(@traildb, @curr)
+      @curr += 1
+      val
     end
   end
 end
 
 class TrailDBLexicon
   include Iterator(String)
+  @traildb : TrailDB
+  @fieldish : String
+  @curr : TdbVal
+  @max : TdbVal
 
-  def initialize(@traildb : TrailDB, field : TdbField)
-    @curr = 0
-    @max = @traildb.lexicon_size(@field)
+  def initialize(@traildb : TrailDB, @fieldish : String)
+    @curr = 0_u64
+    @max = @traildb.lexicon_size(@fieldish)
   end
 
   def next
-    if val >= @max
+    if @curr >= @max
       stop
+    else
+      val = @traildb.get_value(@fieldish, @curr)
+      @curr += 1
+      val
     end
-
-    val = @traildb.get_value(@field, i)
-    @curr += 1
-    val
   end
 end
 
 class TrailDB
+  @db : Tdb
   @num_trails : UInt64
   @num_events : UInt64
   @num_fields : UInt64
@@ -124,6 +184,7 @@ class TrailDB
   @field_map : Hash(String, TdbField)
   @buffer : Pointer(UInt64)
 
+  getter db
   getter num_trails
   getter num_events
   getter num_fields
@@ -146,15 +207,19 @@ class TrailDB
     @num_fields.times.each do |field|
       fieldish = String.new(LibTrailDB.tdb_get_field_name(@db, field))
       @fields << fieldish
-      # @field_map[fieldish] = field
+      @field_map[fieldish] = field.to_u32
     end
 
     @buffer = Pointer(UInt64).malloc(2)
   end
 
+  def trails
+    TrailDBTrailIterator.new(self)
+  end
+
   def field(fieldish : String) : TdbField
     # Return a field ID given a field name.
-    self.field_map[fieldish]
+    @field_map[fieldish]
   end
 
   def get_item(fieldish : String, value : String) : TdbItem
@@ -171,9 +236,9 @@ class TrailDB
     # Return the string value corresponding to an item.
     value = LibTrailDB.tdb_get_item_value(@db, item, @buffer)
     if !value
-      raise TrailDBException.new("Error reading value, error: #{LibTrailDB.tdb_error(@db)}")
+      raise TrailDBException.new("Error reading value")
     end
-    value[0, @buffer.value]
+    String.new(value, @buffer.value)
   end
 
   def get_value(fieldish : String, val : TdbVal) : String
@@ -181,9 +246,9 @@ class TrailDB
     field = self.field(fieldish)
     value = String.new(LibTrailDB.tdb_get_value(@db, field, val, @buffer))
     if !value
-      raise TrailDBException.new("Error reading value, error: #{LibTrailDB.tdb_error(@db)}")
+      raise TrailDBException.new("Error reading value")
     end
-    value[0, @buffer.value]
+    String.new(value, @buffer.value)
   end
 
   def get_uuid(trail_id : UInt64) : String
@@ -195,7 +260,7 @@ class TrailDB
     String.new(uuid, 16)
   end
 
-  def lexicon_size(fieldish : String) : Int32
+  def lexicon_size(fieldish : String) : TdbVal
     # Return the number of distinct values in the given field ID or field name.
     field = self.field(fieldish)
     value = LibTrailDB.tdb_lexicon_size(@db, field)
@@ -207,10 +272,47 @@ class TrailDB
 
   def lexicon(fieldish : String)
     # Return an iterator over values of the given field ID or field name.
-    field = self.field(fieldish)
-    return TrailDBLexicon.new(self, field)
+    return TrailDBLexicon.new(self, fieldish)
   end
+
+  def get_trail_id(uuid)
+    # Return Trail ID given a UUID.
+    ret = LibTrailDB.tdb_get_trail_id(@db, uuid_raw(uuid), @buffer)
+    if ret
+      raise TrailDBException.new("UUID '#{uuid}' not found")
+    end
+    @buffer.value
+  end
+
+  def time_range
+    # Return the time range covered by this TrailDB.
+    tmin = Time.epoch(self.min_timestamp)
+    tmax = Time.epoch(self.max_timestamp)
+    {tmin, tmax}
+  end
+
+  def min_timestamp
+    # Return the minimum time stamp of this TrailDB.
+    LibTrailDB.tdb_min_timestamp(@db)
+  end
+
+  def max_timestamp
+    # Return the maximum time stamp of this TrailDB.
+    LibTrailDB.tdb_max_timestamp(@db)
+  end
+
+  # def create_filter(event_filter)
+  #   return TrailDBEventFilter.new(event_filter)
+  # end
 end
 
-t = TrailDB.new("/home/joey/Downloads/wikipedia-history-small.tdb")
-puts t.num_trails
+t = TrailDB.new("/mnt/data/wikipedia-history-small.tdb")
+# t.lexicon("user").each do |user|
+#   puts user
+# end
+
+t.trails.each_with_index do |trail, i|
+  trail.each do |event|
+    # puts "event #{event}"
+  end
+end
