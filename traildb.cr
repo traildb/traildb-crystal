@@ -98,14 +98,19 @@ end
 
 class TrailDBEventIterator
   include Iterator(TrailDBEvent)
+
   @traildb : TrailDB
   @trail_id : UInt64
   @cursor : TdbCursor
 
-  def initialize(@traildb : TrailDB, @trail_id : UInt64)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64, event_filter : TrailDBEventFilter | Nil = nil)
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
+    end
+
+    if event_filter && LibTrailDB.tdb_cursor_set_event_filter(@cursor, event_filter.flt)
+      raise TrailDBException.new("cursor_set_event_filter failed")
     end
   end
 
@@ -127,7 +132,7 @@ class TrailDBEventIterator
         items[@traildb.fields[idx + 1]] = @traildb.get_item_value(i)
       end
 
-      {event.value.timestamp, items}
+      {Time.epoch(event.value.timestamp), items}
     end
   end
 
@@ -141,6 +146,7 @@ end
 
 class TrailDBTrailIterator
   include Iterator(TrailDBEventIterator)
+
   @traildb : TrailDB
   @curr : UInt64
 
@@ -161,6 +167,7 @@ end
 
 class TrailDBLexicon
   include Iterator(String)
+
   @traildb : TrailDB
   @fieldish : String
   @curr : TdbVal
@@ -182,6 +189,118 @@ class TrailDBLexicon
   end
 end
 
+alias TrailDBEventFilterClause = Tuple(String, String) | Tuple(String, String, Bool)
+
+# Create a TrailDB filter from a series of clauses
+class TrailDBEventFilter
+  @flt : TdbEventFilter
+  property flt
+
+  def initialize(@traildb, query : Array(Array(TrailDBEventFilterClause)))
+    @flt = LibTrailDB.tdb_event_filter_new
+
+    query.each_with_index do |clause, i|
+      if i > 0
+        err = LibTrailDB.tdb_event_filter_new_clause(@flt)
+        if err
+          raise TrailDBException.new("Out of memory in _create_filter")
+        end
+      end
+
+      clause.each do |term|
+        if term.size == 3
+          field, value, is_negative = term
+        else
+          field, value = term
+          is_negative = false
+        end
+
+        begin
+          item = @traildb.get_item(field, value)
+        rescue TrailDBException
+          item = 0
+        end
+
+        err = LibTrailDB.tdb_event_filter_add_term(@flt, item, is_negative ? 1 : 0)
+        if err
+          raise TrailDBException.new("Out of memory in _create_filter")
+        end
+      end
+    end
+  end
+
+  def finalize
+    LibTrailDB.tdb_event_filter_free(@flt)
+  end
+end
+
+# Construct a new TrailDB.
+class TrailDBConstructor
+  # Initialize a new TrailDB constructor.
+  #
+  # path -- TrailDB output path (without .tdb).
+  # ofields -- List of field (names) in this TrailDB.
+  def initialize(@path : String, @ofields : Array(String) = [] of String)
+    if not path
+      raise TrailDBException.new("Path is required")
+    end
+
+    n = ofields.size
+
+    @cons = LibTrailDB.tdb_cons_init
+    if LibTrailDB.tdb_cons_open(@cons, path, @ofields, n) != 0
+      raise TrailDBException.new("Cannot open constructor")
+    end
+  end
+
+  def finalize
+    LibTrailDB.tdb_cons_close(@cons)
+  end
+
+  # Add an event in TrailDB.
+  #
+  # uuid -- UUID of this event.
+  # tstamp -- Timestamp of this event (datetime or integer).
+  # values -- value of each field.
+  def add(uuid : String, tstamp : Time | UInt64, values : Array(String))
+    if tstamp.is_a?(Time)
+      tstamp = tstamp.epoch.as(UInt64)
+    end
+
+    n = @ofields.size
+    value_lengths = values.map { |v| v.size.as(UInt64) }
+    f = LibTrailDB.tdb_cons_add(@cons, uuid_raw(uuid), tstamp, values, value_lengths)
+    if f
+      raise TrailDBException.new("Too many values: #{values[f]}")
+    end
+  end
+
+  # Merge an existing TrailDB in this TrailDB.
+  #
+  # traildb -- an existing TrailDB
+  def append(traildb : TrailDB)
+    f = LibTrailDB.tdb_cons_append(@cons, traildb.db)
+    if f < 0
+      raise TrailDBException.new("Wrong number of fields: #{traildb.num_fields}")
+    end
+    if f > 0
+      raise TrailDBException.new("Too many values")
+    end
+  end
+
+  # Finalize this TrailDB. You cannot add new events in this TrailDB
+  # after calling this function.
+  #
+  # Returns a new TrailDB handle.
+  def close
+    r = LibTrailDB.tdb_cons_finalize(@cons)
+    if r
+      raise TrailDBException.new("Could not finalize (#{r})")
+    end
+    TrailDB.new(@path)
+  end
+end
+
 class TrailDB
   @db : Tdb
   @num_trails : UInt64
@@ -190,7 +309,6 @@ class TrailDB
   @fields : Array(String)
   @field_map : Hash(String, TdbField)
   @buffer : Pointer(UInt64)
-
   getter db
   getter num_trails
   getter num_events
@@ -220,22 +338,27 @@ class TrailDB
     @buffer = Pointer(UInt64).malloc(2)
   end
 
+  def finalize
+    LibTrailDB.tdb_close(@db)
+  end
+
+  # Return a iterator for all trails.
   def trails
     TrailDBTrailIterator.new(self)
   end
 
+  # Return a iterator for the given UUID.
   def [](uuid)
-    # Return a cursor for the given UUID or Trail ID.
     TrailDBEventIterator.new(self, self.get_trail_id(uuidish))
   end
 
+  # Return a field ID given a field name.
   def field(fieldish : String) : TdbField
-    # Return a field ID given a field name.
     @field_map[fieldish]
   end
 
+  # Return the item corresponding to a field ID or a field name and a string value.
   def get_item(fieldish : String, value : String) : TdbItem
-    # Return the item corresponding to a field ID or a field name and a string value.
     field = self.field(fieldish)
     item = LibTrailDB.tdb_get_item(@db, field, value, value.size)
     if !item
@@ -244,8 +367,8 @@ class TrailDB
     item
   end
 
+  # Return the string value corresponding to an item.
   def get_item_value(item : TdbItem) : String
-    # Return the string value corresponding to an item.
     value = LibTrailDB.tdb_get_item_value(@db, item, @buffer)
     if !value
       raise TrailDBException.new("Error reading value")
@@ -253,8 +376,8 @@ class TrailDB
     String.new(value, @buffer.value)
   end
 
+  # Return the string value corresponding to a field ID or a field name and a value ID.
   def get_value(fieldish : String, val : TdbVal) : String
-    # Return the string value corresponding to a field ID or a field name and a value ID.
     field = self.field(fieldish)
     value = String.new(LibTrailDB.tdb_get_value(@db, field, val, @buffer))
     if !value
@@ -263,8 +386,8 @@ class TrailDB
     String.new(value, @buffer.value)
   end
 
+  # Return UUID given a Trail ID.
   def get_uuid(trail_id : UInt64) : String
-    # Return UUID given a Trail ID.
     uuid = LibTrailDB.tdb_get_uuid(@db, trail_id)
     if !uuid
       raise TrailDBException.new("Trail ID out of range")
@@ -272,8 +395,8 @@ class TrailDB
     String.new(uuid, 16)
   end
 
+  # Return the number of distinct values in the given field ID or field name.
   def lexicon_size(fieldish : String) : TdbVal
-    # Return the number of distinct values in the given field ID or field name.
     field = self.field(fieldish)
     value = LibTrailDB.tdb_lexicon_size(@db, field)
     if value == 0
@@ -282,13 +405,13 @@ class TrailDB
     value
   end
 
+  # Return an iterator over values of the given field ID or field name.
   def lexicon(fieldish : String)
-    # Return an iterator over values of the given field ID or field name.
     return TrailDBLexicon.new(self, fieldish)
   end
 
+  # Return Trail ID given a UUID.
   def get_trail_id(uuid)
-    # Return Trail ID given a UUID.
     ret = LibTrailDB.tdb_get_trail_id(@db, uuid_raw(uuid), @buffer)
     if ret
       raise TrailDBException.new("UUID '#{uuid}' not found")
@@ -296,26 +419,27 @@ class TrailDB
     @buffer.value
   end
 
+  # Return the time range covered by this TrailDB.
   def time_range
-    # Return the time range covered by this TrailDB.
     tmin = Time.epoch(self.min_timestamp)
     tmax = Time.epoch(self.max_timestamp)
     {tmin, tmax}
   end
 
+  # Return the minimum time stamp of this TrailDB.
   def min_timestamp
-    # Return the minimum time stamp of this TrailDB.
     LibTrailDB.tdb_min_timestamp(@db)
   end
 
+  # Return the maximum time stamp of this TrailDB.
   def max_timestamp
-    # Return the maximum time stamp of this TrailDB.
     LibTrailDB.tdb_max_timestamp(@db)
   end
 
-  # def create_filter(event_filter)
-  #   return TrailDBEventFilter.new(event_filter)
-  # end
+  # Create TrailDB filter
+  def create_filter(query : Array(Array(TrailDBEventFilterClause)))
+    return TrailDBEventFilter.new(self, query)
+  end
 end
 
 t = TrailDB.new("/mnt/data/wikipedia-history-small.tdb")
@@ -325,7 +449,7 @@ t = TrailDB.new("/mnt/data/wikipedia-history-small.tdb")
 
 t.trails.each_with_index do |trail, i|
   trail.each do |event|
-    # puts "event #{event}"
+    puts "event #{event}"
   end
   if i % 10000 == 0
     puts i
