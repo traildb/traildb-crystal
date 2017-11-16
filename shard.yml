@@ -6,7 +6,10 @@ authors:
 
 targets:
   shards:
-    main: traildb.cr
+    main: src/traildb.cr
+
+scripts:
+  postinstall: make
 
 crystal: 0.23.1
 
