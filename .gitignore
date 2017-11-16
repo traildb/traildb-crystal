@@ -1,2 +1,4 @@
 *.so
-traildb
+.shards
+build
+.DS_Store
