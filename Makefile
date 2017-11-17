@@ -1,12 +1,11 @@
 .PHONY: default
 
-default: build build/libtraildb_wrapper.so build/traildb
+default: build build/libtraildb_wrapper.a
 
-build/libtraildb_wrapper.so:
-	gcc -shared -o build/libtraildb_wrapper.so -fPIC src/traildb_wrapper.c
-
-build/traildb:
-	crystal build src/traildb.cr -o build/traildb
+build/libtraildb_wrapper.a:
+	gcc -Wall -g -O2 -c -o build/traildb_wrapper.o ext/traildb_wrapper.c
+	ar -rsc build/libtraildb_wrapper.a build/traildb_wrapper.o
+	ranlib build/libtraildb_wrapper.a
 
 build:
 	mkdir build
