@@ -12,3 +12,9 @@ build:
 
 clean:
 	rm -rf build
+	rm -rf docs
+
+docs:
+	rm -rf docs
+	crystal docs
+	mv doc docs

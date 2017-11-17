@@ -5,7 +5,7 @@
   <meta id="repository-name" content="github.com/traildb/traildb-crystal">
   <link href="css/style.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="js/doc.js"></script>
-  <title>TrailDBConstructor - github.com/traildb/traildb-crystal</title>
+  <title>TrailDBEventIterator - github.com/traildb/traildb-crystal</title>
 </head>
 <body>
 
@@ -75,7 +75,7 @@
       
     </li>
   
-  <li class=" current" data-id="github.com/traildb/traildb-crystal/TrailDBConstructor" data-name="traildbconstructor">
+  <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBConstructor" data-name="traildbconstructor">
       <a href="TrailDBConstructor.html">TrailDBConstructor</a>
       
     </li>
@@ -115,7 +115,7 @@
       
     </li>
   
-  <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventIterator" data-name="traildbeventiterator">
+  <li class=" current" data-id="github.com/traildb/traildb-crystal/TrailDBEventIterator" data-name="traildbeventiterator">
       <a href="TrailDBEventIterator.html">TrailDBEventIterator</a>
       
     </li>
@@ -152,23 +152,26 @@
 <div id="main-content">
 <h1 class="type-name">
 
-  <span class="kind">class</span> TrailDBConstructor
+  <span class="kind">class</span> TrailDBEventIterator
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="TrailDBConstructor.html">TrailDBConstructor</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="TrailDBEventIterator.html">TrailDBEventIterator</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
 
-  <h2>Overview</h2>
-
-  <p>Construct a new TrailDB.</p>
 
 
 
 
+  <h2>Included Modules</h2>
+  <ul class="other-types-list">
+  
+    <li class="other-type">Iterator(Hash(String, String | Time))</li>
+  
+  </ul>
 
 
 
@@ -182,7 +185,7 @@
   <h2>Defined in:</h2>
   
     
-      <a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L270" target="_blank">traildb.cr</a>
+      <a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L112" target="_blank">traildb.cr</a>
     
     <br/>
   
@@ -195,9 +198,7 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28path%3AString%2Cofields%3AArray%28String%29%3D%5B%5DofString%29-class-method" class="signature"><strong>.new</strong>(path : String, ofields : Array(String) = <span class="o">[]</span> <span class="k">of</span> <span class="t">String</span>)</a>
-        
-          <div class="summary"><p>Initialize a new TrailDB constructor.</p></div>
+        <a href="#new%28traildb%3ATrailDB%2Ctrail_id%3AUInt64%2Cevent_filter%3ATrailDBEventFilter%3F%3Dnil%29-class-method" class="signature"><strong>.new</strong>(traildb : TrailDB, trail_id : UInt64, event_filter : TrailDBEventFilter? = <span class="n">nil</span>)</a>
         
       </li>
     
@@ -211,28 +212,17 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#add%28uuid%3AString%2Ctstamp%3ATime%7CUInt64%7CInt32%2Cvalues%3AArray%28String%29%29-instance-method" class="signature"><strong>#add</strong>(uuid : String, tstamp : Time | UInt64 | Int32, values : Array(String))</a>
-        
-          <div class="summary"><p>Add an event in TrailDB.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#append%28traildb%3ATrailDB%29-instance-method" class="signature"><strong>#append</strong>(traildb : TrailDB)</a>
-        
-          <div class="summary"><p>Merge an existing TrailDB in this TrailDB.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#close-instance-method" class="signature"><strong>#close</strong></a>
-        
-          <div class="summary"><p>Finalize this TrailDB.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
         <a href="#finalize-instance-method" class="signature"><strong>#finalize</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#next-instance-method" class="signature"><strong>#next</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#rewind-instance-method" class="signature"><strong>#rewind</strong></a>
         
       </li>
     
@@ -264,27 +254,43 @@
 
 
   
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
 </div>
 
 
   <h2>Constructor Detail</h2>
   
-    <div class="entry-detail" id="new&#40;path:String,ofields:Array&#40;String&#41;&#61;&#91;&#93;ofString&#41;-class-method">
+    <div class="entry-detail" id="new&#40;traildb:TrailDB,trail_id:UInt64,event_filter:TrailDBEventFilter?&#61;nil&#41;-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(path : String, ofields : Array(String) = <span class="o">[]</span> <span class="k">of</span> <span class="t">String</span>)
+        def self.<strong>new</strong>(traildb : <a href="TrailDB.html">TrailDB</a>, trail_id : UInt64, event_filter : <a href="TrailDBEventFilter.html">TrailDBEventFilter</a>? = <span class="n">nil</span>)
 
-        <a class="method-permalink" href="#new%28path%3AString%2Cofields%3AArray%28String%29%3D%5B%5DofString%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28traildb%3ATrailDB%2Ctrail_id%3AUInt64%2Cevent_filter%3ATrailDBEventFilter%3F%3Dnil%29-class-method">#</a>
       </div>
-      
-        <div class="doc"><p>Initialize a new TrailDB constructor.
-path -- TrailDB output path (the <code>.tdb</code> extension is optional).
-ofields -- List of field (names) in this TrailDB.</p></div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L274" target="_blank">View source</a>]
+          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L119" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -295,69 +301,6 @@ ofields -- List of field (names) in this TrailDB.</p></div>
 
 
   <h2>Instance Method Detail</h2>
-  
-    <div class="entry-detail" id="add&#40;uuid:String,tstamp:Time|UInt64|Int32,values:Array&#40;String&#41;&#41;-instance-method">
-      <div class="signature">
-        
-        def <strong>add</strong>(uuid : String, tstamp : Time | UInt64 | Int32, values : Array(String))
-
-        <a class="method-permalink" href="#add%28uuid%3AString%2Ctstamp%3ATime%7CUInt64%7CInt32%2Cvalues%3AArray%28String%29%29-instance-method">#</a>
-      </div>
-      
-        <div class="doc"><p>Add an event in TrailDB.</p>
-
-<p>uuid -- UUID of this event.
-tstamp -- Timestamp of this event (datetime or integer).
-values -- value of each field.</p></div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L297" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="append&#40;traildb:TrailDB&#41;-instance-method">
-      <div class="signature">
-        
-        def <strong>append</strong>(traildb : <a href="TrailDB.html">TrailDB</a>)
-
-        <a class="method-permalink" href="#append%28traildb%3ATrailDB%29-instance-method">#</a>
-      </div>
-      
-        <div class="doc"><p>Merge an existing TrailDB in this TrailDB.</p>
-
-<p>traildb -- an existing TrailDB</p></div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L310" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="close-instance-method">
-      <div class="signature">
-        
-        def <strong>close</strong>
-
-        <a class="method-permalink" href="#close-instance-method">#</a>
-      </div>
-      
-        <div class="doc"><p>Finalize this TrailDB. You cannot add new events in this TrailDB
-after calling this function.</p>
-
-<p>Returns a new TrailDB handle.</p></div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L324" target="_blank">View source</a>]
-        
-      </div>
-    </div>
   
     <div class="entry-detail" id="finalize-instance-method">
       <div class="signature">
@@ -370,7 +313,39 @@ after calling this function.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/traildb/traildb-crystal/blob/f5c0dd2ff968e6d3afec87fc058ed3a5efa9580c/src/traildb.cr#L288" target="_blank">View source</a>]
+          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L133" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="next-instance-method">
+      <div class="signature">
+        
+        def <strong>next</strong>
+
+        <a class="method-permalink" href="#next-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L137" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="rewind-instance-method">
+      <div class="signature">
+        
+        def <strong>rewind</strong>
+
+        <a class="method-permalink" href="#rewind-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L156" target="_blank">View source</a>]
         
       </div>
     </div>
