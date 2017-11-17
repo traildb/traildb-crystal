@@ -4,6 +4,8 @@ before_install:
   - sudo apt-get install -y libarchive-dev pkg-config build-essential wget
   - wget https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudy-dev_1.0.5-5_amd64.deb https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudydebian1_1.0.5-5_amd64.deb
   - sudo dpkg -i libjudy-dev_1.0.5-5_amd64.deb libjudydebian1_1.0.5-5_amd64.deb
-  - git clone https://github.com/traildb/traildb && cd traildb && mkdir m4 && ./autogen.sh && ./configure --prefix=/usr && make && sudo make install && cd ..
+  - git clone https://github.com/traildb/traildb && cd traildb && ./waf configure && sudo ./waf install && cd ..
 before_script:
-  - cd .. && make
+  - make
+env:
+  - LD_LIBRARY_PATH=/usr/local/lib
