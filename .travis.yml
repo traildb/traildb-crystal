@@ -7,4 +7,4 @@ before_install:
   - git clone https://github.com/traildb/traildb.git
   - cd traildb && ./waf configure && sudo ./waf install
 before_script:
-  - make
+  - cd .. && make
