@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/traildb/traildb-crystal.svg?branch=master)](https://travis-ci.org/traildb/traildb-crystal)
+
 # TrailDB Crystal Bindings
 
 ![TrailDB Logo](http://traildb.io/images/traildb_logo_512.png)
@@ -13,7 +15,7 @@ Crystal is an excellent language for TrailDB due to its simplicity and blazing f
 ```yaml
 dependencies:
   traildb:
-    bitbucket: joeyrobert/traildb-crystal
+    github: traildb/traildb-crystal
 ```
 3. Install using `crystal deps`
 
@@ -34,7 +36,7 @@ cons.add(uuid, Time.new(2017, 11, 14, 1, 1), ["c", "3"])
 cons.close
 ```
 
-### Loading a TrailDB
+### Loading all trails
 
 #### Code
 
@@ -62,6 +64,16 @@ Events for trail 12345678123456781234567812345678
 {"field1" => "a", "field2" => "1", "time" => 2017-11-12 06:01:00 UTC}
 {"field1" => "b", "field2" => "2", "time" => 2017-11-13 06:01:00 UTC}
 {"field1" => "c", "field2" => "3", "time" => 2017-11-14 06:01:00 UTC}
+```
+
+### Loading all events in a trail
+
+#### Code
+
+```crystal
+events = traildb[0].to_a
+# or
+events = traildb["12345678123456781234567812345678"].to_a
 ```
 
 ### Applying an Event Filter
