@@ -1,6 +1,8 @@
 language: crystal
-before_script:
-  - apt-get install libarchive-dev libjudy-dev pkg-config
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libarchive-dev libjudy-dev pkg-config
   - git clone https://github.com/traildb/traildb.git
-  - cd traildb && ./waf configure && ./waf install
+  - cd traildb && ./waf configure && sudo ./waf install
+before_script:
   - make
