@@ -4,7 +4,7 @@
 
 ![TrailDB Logo](http://traildb.io/images/traildb_logo_512.png)
 
-Official Crystal bindings for [TrailDB](http://traildb.io/), an efficient tool for storing and querying series of events. 
+Official [Crystal](https://crystal-lang.org/) bindings for [TrailDB](http://traildb.io/), an efficient tool for storing and querying series of events. 
 This library is heavily inspired by the [official Python bindings](https://github.com/traildb/traildb-python).
 Crystal is an excellent language for TrailDB due to its simplicity and blazing fast performance. Crystal + TrailDB = ❤️.
 
