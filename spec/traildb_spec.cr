@@ -37,12 +37,34 @@ describe TrailDB do
     # Force evaluation of iterator
     events = trail.to_a
     events.size.should eq 3
+
+    # Assert fields individually
     events[0]["field1"].should eq "a"
     events[1]["field1"].should eq "b"
     events[2]["field1"].should eq "c"
     events[0]["field2"].should eq "1"
     events[1]["field2"].should eq "2"
     events[2]["field2"].should eq "3"
+  end
+
+  it "reads events from a trail by uuid" do
+    [1, 2, 3].size.should eq 3
+
+    traildb = TrailDB.new("testtrail")
+    traildb.num_trails.should eq 1
+    # trail = traildb[UUID]
+    trail = traildb["12345678123456781234567812345678"]
+    trail.should be_a TrailDBEventIterator
+
+    # Force evaluation of iterator
+    events = trail.to_a
+
+    # Assert full array format
+    events.should eq [
+      {"field1" => "a", "field2" => "1", "time" => Time.epoch(1)},
+      {"field1" => "b", "field2" => "2", "time" => Time.epoch(2)},
+      {"field1" => "c", "field2" => "3", "time" => Time.epoch(3)},
+    ]
   end
 
   it "reads trails from a traildb" do
