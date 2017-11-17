@@ -1,7 +1,9 @@
 language: crystal
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libarchive-dev libjudy-dev pkg-config
+  - sudo apt-get install -y libarchive-dev pkg-config build-essential wget
+  - wget https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudy-dev_1.0.5-5_amd64.deb https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudydebian1_1.0.5-5_amd64.deb
+  - sudo dpkg -i libjudy-dev_1.0.5-5_amd64.deb libjudydebian1_1.0.5-5_amd64.deb
   - git clone https://github.com/traildb/traildb.git
   - cd traildb && ./waf configure && sudo ./waf install
 before_script:
