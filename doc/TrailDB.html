@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta id="repository-name" content="">
+  <link href="css/style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="js/doc.js"></script>
+  <title>TrailDB - </title>
+</head>
+<body>
+
+<div id="types-list">
+  <div id="search-box">
+    <input type="search" id="search-input" placeholder="Search...">
+  </div>
+
+  <ul>
+    <li><a href="index.html">README</a></li>
+  </ul>
+
+  <ul>
+  
+  <li class=" " data-id="/toplevel" data-name="top level namespace">
+      <a href="toplevel.html">Top Level Namespace</a>
+      
+    </li>
+  
+  <li class=" " data-id="/Tdb" data-name="tdb">
+      <a href="Tdb.html">Tdb</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbChar" data-name="tdbchar">
+      <a href="TdbChar.html">TdbChar</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbCons" data-name="tdbcons">
+      <a href="TdbCons.html">TdbCons</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbCursor" data-name="tdbcursor">
+      <a href="TdbCursor.html">TdbCursor</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbError" data-name="tdberror">
+      <a href="TdbError.html">TdbError</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbEventFilter" data-name="tdbeventfilter">
+      <a href="TdbEventFilter.html">TdbEventFilter</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbField" data-name="tdbfield">
+      <a href="TdbField.html">TdbField</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbItem" data-name="tdbitem">
+      <a href="TdbItem.html">TdbItem</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TdbVal" data-name="tdbval">
+      <a href="TdbVal.html">TdbVal</a>
+      
+    </li>
+  
+  <li class=" current" data-id="/TrailDB" data-name="traildb">
+      <a href="TrailDB.html">TrailDB</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBConstructor" data-name="traildbconstructor">
+      <a href="TrailDBConstructor.html">TrailDBConstructor</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEvent" data-name="traildbevent">
+      <a href="TrailDBEvent.html">TrailDBEvent</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilter" data-name="traildbeventfilter">
+      <a href="TrailDBEventFilter.html">TrailDBEventFilter</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilterClause" data-name="traildbeventfilterclause">
+      <a href="TrailDBEventFilterClause.html">TrailDBEventFilterClause</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilterQuery" data-name="traildbeventfilterquery">
+      <a href="TrailDBEventFilterQuery.html">TrailDBEventFilterQuery</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilterTerm" data-name="traildbeventfilterterm">
+      <a href="TrailDBEventFilterTerm.html">TrailDBEventFilterTerm</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilterTermWithNegation" data-name="traildbeventfiltertermwithnegation">
+      <a href="TrailDBEventFilterTermWithNegation.html">TrailDBEventFilterTermWithNegation</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventFilterTermWithoutNegation" data-name="traildbeventfiltertermwithoutnegation">
+      <a href="TrailDBEventFilterTermWithoutNegation.html">TrailDBEventFilterTermWithoutNegation</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventIterator" data-name="traildbeventiterator">
+      <a href="TrailDBEventIterator.html">TrailDBEventIterator</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBEventIteratorWithUUID" data-name="traildbeventiteratorwithuuid">
+      <a href="TrailDBEventIteratorWithUUID.html">TrailDBEventIteratorWithUUID</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBException" data-name="traildbexception">
+      <a href="TrailDBException.html">TrailDBException</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBField" data-name="traildbfield">
+      <a href="TrailDBField.html">TrailDBField</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBLexiconIterator" data-name="traildblexiconiterator">
+      <a href="TrailDBLexiconIterator.html">TrailDBLexiconIterator</a>
+      
+    </li>
+  
+  <li class=" " data-id="/TrailDBTrailIterator" data-name="traildbtrailiterator">
+      <a href="TrailDBTrailIterator.html">TrailDBTrailIterator</a>
+      
+    </li>
+  
+</ul>
+
+</div>
+
+<div id="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> TrailDB
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="TrailDB.html">TrailDB</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>Overview</h2>
+
+  <p>Load a TrailDB, including metadata and a trails iterator</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Defined in:</h2>
+  
+
+
+
+
+
+  <h2>Constructors</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28path%3AString%29-class-method" class="signature"><strong>.new</strong>(path : String)</a>
+        
+          <div class="summary"><p>Load a TrailDB at path (the <code>.tdb</code> extension is optional).</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+  <h2>Instance Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%5B%5D%28uuidish%3AString%7CUInt64%7CInt32%29-instance-method" class="signature"><strong>#[]</strong>(uuidish : String | UInt64 | Int32)</a>
+        
+          <div class="summary"><p>Return a iterator for the given UUID.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#create_filter%28query%3ATrailDBEventFilterQuery%2Cset_filter%3ABool%3Dfalse%29-instance-method" class="signature"><strong>#create_filter</strong>(query : TrailDBEventFilterQuery, set_filter : Bool = <span class="n">false</span>)</a>
+        
+          <div class="summary"><p>Create TrailDB filter</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#db%3APointer%28Void%29-instance-method" class="signature"><strong>#db</strong> : Pointer(Void)</a>
+        
+          <div class="summary"><p>Raw TrailDB pointer.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#event_filter%3ATrailDBEventFilter%3F-instance-method" class="signature"><strong>#event_filter</strong> : TrailDBEventFilter?</a>
+        
+          <div class="summary"><p>The current event filter.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#event_filter%3D%28event_filter%29-instance-method" class="signature"><strong>#event_filter=</strong>(event_filter)</a>
+        
+          <div class="summary"><p>The current event filter.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#field%28fieldish%3ATrailDBField%29%3ATdbField-instance-method" class="signature"><strong>#field</strong>(fieldish : TrailDBField) : TdbField</a>
+        
+          <div class="summary"><p>Return a field ID for given a field name or field ID.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#fields%3AArray%28String%29-instance-method" class="signature"><strong>#fields</strong> : Array(String)</a>
+        
+          <div class="summary"><p>Field strings.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#finalize-instance-method" class="signature"><strong>#finalize</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get_item%28fieldish%3AString%2Cvalue%3AString%29%3ATdbItem-instance-method" class="signature"><strong>#get_item</strong>(fieldish : String, value : String) : TdbItem</a>
+        
+          <div class="summary"><p>Return the item corresponding to a field ID or a field name and a string value.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get_item_value%28item%3ATdbItem%29%3AString-instance-method" class="signature"><strong>#get_item_value</strong>(item : TdbItem) : String</a>
+        
+          <div class="summary"><p>Return the string value corresponding to an item.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get_trail_id%28uuid%3AString%29-instance-method" class="signature"><strong>#get_trail_id</strong>(uuid : String)</a>
+        
+          <div class="summary"><p>Return Trail ID given a UUID.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get_uuid%28trail_id%3AUInt64%7CInt32%2Craw%3Dfalse%29%3AString-instance-method" class="signature"><strong>#get_uuid</strong>(trail_id : UInt64 | Int32, raw = <span class="n">false</span>) : String</a>
+        
+          <div class="summary"><p>Return UUID given a Trail ID.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get_value%28fieldish%3ATrailDBField%2Cval%3ATdbVal%29%3AString-instance-method" class="signature"><strong>#get_value</strong>(fieldish : TrailDBField, val : TdbVal) : String</a>
+        
+          <div class="summary"><p>Return the string value corresponding to a field ID or a field name and a value ID.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#includes%3F%28uuidish%29-instance-method" class="signature"><strong>#includes?</strong>(uuidish)</a>
+        
+          <div class="summary"><p>Return true if UUID or Trail ID exists in this TrailDB.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#lexicon%28fieldish%3ATrailDBField%29-instance-method" class="signature"><strong>#lexicon</strong>(fieldish : TrailDBField)</a>
+        
+          <div class="summary"><p>Return an iterator over values of the given field ID or field name.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#lexicon_size%28fieldish%3ATrailDBField%29%3ATdbVal-instance-method" class="signature"><strong>#lexicon_size</strong>(fieldish : TrailDBField) : TdbVal</a>
+        
+          <div class="summary"><p>Return the number of distinct values in the given field ID or field name.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#max_timestamp-instance-method" class="signature"><strong>#max_timestamp</strong></a>
+        
+          <div class="summary"><p>Return the maximum time stamp of this TrailDB.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#min_timestamp-instance-method" class="signature"><strong>#min_timestamp</strong></a>
+        
+          <div class="summary"><p>Return the minimum time stamp of this TrailDB.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#num_events%3AUInt64-instance-method" class="signature"><strong>#num_events</strong> : UInt64</a>
+        
+          <div class="summary"><p>Number of events.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#num_fields%3AUInt64-instance-method" class="signature"><strong>#num_fields</strong> : UInt64</a>
+        
+          <div class="summary"><p>Number of fields.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#num_trails%3AUInt64-instance-method" class="signature"><strong>#num_trails</strong> : UInt64</a>
+        
+          <div class="summary"><p>Number of trails.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#time_range-instance-method" class="signature"><strong>#time_range</strong></a>
+        
+          <div class="summary"><p>Return the time range covered by this TrailDB.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#trails-instance-method" class="signature"><strong>#trails</strong></a>
+        
+          <div class="summary"><p>Return a iterator for all trails.</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>Constructor Detail</h2>
+  
+    <div class="entry-detail" id="new&#40;path:String&#41;-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(path : String)
+
+        <a class="method-permalink" href="#new%28path%3AString%29-class-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Load a TrailDB at path (the <code>.tdb</code> extension is optional).</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+
+
+  <h2>Instance Method Detail</h2>
+  
+    <div class="entry-detail" id="&#91;&#93;&#40;uuidish:String|UInt64|Int32&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>[]</strong>(uuidish : String | UInt64 | Int32)
+
+        <a class="method-permalink" href="#%5B%5D%28uuidish%3AString%7CUInt64%7CInt32%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return a iterator for the given UUID.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="create_filter&#40;query:TrailDBEventFilterQuery,set_filter:Bool&#61;false&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>create_filter</strong>(query : <a href="TrailDBEventFilterQuery.html">TrailDBEventFilterQuery</a>, set_filter : Bool = <span class="n">false</span>)
+
+        <a class="method-permalink" href="#create_filter%28query%3ATrailDBEventFilterQuery%2Cset_filter%3ABool%3Dfalse%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Create TrailDB filter</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="db:Pointer&#40;Void&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>db</strong> : Pointer(Void)
+
+        <a class="method-permalink" href="#db%3APointer%28Void%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Raw TrailDB pointer.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="event_filter:TrailDBEventFilter?-instance-method">
+      <div class="signature">
+        
+        def <strong>event_filter</strong> : <a href="TrailDBEventFilter.html">TrailDBEventFilter</a>?
+
+        <a class="method-permalink" href="#event_filter%3ATrailDBEventFilter%3F-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>The current event filter. Set to nil to remove.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="event_filter&#61;&#40;event_filter&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>event_filter=</strong>(event_filter)
+
+        <a class="method-permalink" href="#event_filter%3D%28event_filter%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>The current event filter. Set to nil to remove.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="field&#40;fieldish:TrailDBField&#41;:TdbField-instance-method">
+      <div class="signature">
+        
+        def <strong>field</strong>(fieldish : <a href="TrailDBField.html">TrailDBField</a>) : <a href="TdbField.html">TdbField</a>
+
+        <a class="method-permalink" href="#field%28fieldish%3ATrailDBField%29%3ATdbField-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return a field ID for given a field name or field ID.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="fields:Array&#40;String&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>fields</strong> : Array(String)
+
+        <a class="method-permalink" href="#fields%3AArray%28String%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Field strings.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="finalize-instance-method">
+      <div class="signature">
+        
+        def <strong>finalize</strong>
+
+        <a class="method-permalink" href="#finalize-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get_item&#40;fieldish:String,value:String&#41;:TdbItem-instance-method">
+      <div class="signature">
+        
+        def <strong>get_item</strong>(fieldish : String, value : String) : <a href="TdbItem.html">TdbItem</a>
+
+        <a class="method-permalink" href="#get_item%28fieldish%3AString%2Cvalue%3AString%29%3ATdbItem-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the item corresponding to a field ID or a field name and a string value.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get_item_value&#40;item:TdbItem&#41;:String-instance-method">
+      <div class="signature">
+        
+        def <strong>get_item_value</strong>(item : <a href="TdbItem.html">TdbItem</a>) : String
+
+        <a class="method-permalink" href="#get_item_value%28item%3ATdbItem%29%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the string value corresponding to an item.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get_trail_id&#40;uuid:String&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>get_trail_id</strong>(uuid : String)
+
+        <a class="method-permalink" href="#get_trail_id%28uuid%3AString%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return Trail ID given a UUID.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get_uuid&#40;trail_id:UInt64|Int32,raw&#61;false&#41;:String-instance-method">
+      <div class="signature">
+        
+        def <strong>get_uuid</strong>(trail_id : UInt64 | Int32, raw = <span class="n">false</span>) : String
+
+        <a class="method-permalink" href="#get_uuid%28trail_id%3AUInt64%7CInt32%2Craw%3Dfalse%29%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return UUID given a Trail ID.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get_value&#40;fieldish:TrailDBField,val:TdbVal&#41;:String-instance-method">
+      <div class="signature">
+        
+        def <strong>get_value</strong>(fieldish : <a href="TrailDBField.html">TrailDBField</a>, val : <a href="TdbVal.html">TdbVal</a>) : String
+
+        <a class="method-permalink" href="#get_value%28fieldish%3ATrailDBField%2Cval%3ATdbVal%29%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the string value corresponding to a field ID or a field name and a value ID.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="includes?&#40;uuidish&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>includes?</strong>(uuidish)
+
+        <a class="method-permalink" href="#includes%3F%28uuidish%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return true if UUID or Trail ID exists in this TrailDB.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="lexicon&#40;fieldish:TrailDBField&#41;-instance-method">
+      <div class="signature">
+        
+        def <strong>lexicon</strong>(fieldish : <a href="TrailDBField.html">TrailDBField</a>)
+
+        <a class="method-permalink" href="#lexicon%28fieldish%3ATrailDBField%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return an iterator over values of the given field ID or field name.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="lexicon_size&#40;fieldish:TrailDBField&#41;:TdbVal-instance-method">
+      <div class="signature">
+        
+        def <strong>lexicon_size</strong>(fieldish : <a href="TrailDBField.html">TrailDBField</a>) : <a href="TdbVal.html">TdbVal</a>
+
+        <a class="method-permalink" href="#lexicon_size%28fieldish%3ATrailDBField%29%3ATdbVal-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the number of distinct values in the given field ID or field name.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="max_timestamp-instance-method">
+      <div class="signature">
+        
+        def <strong>max_timestamp</strong>
+
+        <a class="method-permalink" href="#max_timestamp-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the maximum time stamp of this TrailDB.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="min_timestamp-instance-method">
+      <div class="signature">
+        
+        def <strong>min_timestamp</strong>
+
+        <a class="method-permalink" href="#min_timestamp-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the minimum time stamp of this TrailDB.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="num_events:UInt64-instance-method">
+      <div class="signature">
+        
+        def <strong>num_events</strong> : UInt64
+
+        <a class="method-permalink" href="#num_events%3AUInt64-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Number of events.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="num_fields:UInt64-instance-method">
+      <div class="signature">
+        
+        def <strong>num_fields</strong> : UInt64
+
+        <a class="method-permalink" href="#num_fields%3AUInt64-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Number of fields.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="num_trails:UInt64-instance-method">
+      <div class="signature">
+        
+        def <strong>num_trails</strong> : UInt64
+
+        <a class="method-permalink" href="#num_trails%3AUInt64-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Number of trails.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="time_range-instance-method">
+      <div class="signature">
+        
+        def <strong>time_range</strong>
+
+        <a class="method-permalink" href="#time_range-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the time range covered by this TrailDB.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="trails-instance-method">
+      <div class="signature">
+        
+        def <strong>trails</strong>
+
+        <a class="method-permalink" href="#trails-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return a iterator for all trails.</p></div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>

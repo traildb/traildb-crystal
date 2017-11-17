@@ -269,8 +269,7 @@ end
 # Construct a new TrailDB.
 class TrailDBConstructor
   # Initialize a new TrailDB constructor.
-  #
-  # path -- TrailDB output path (without .tdb).
+  # path -- TrailDB output path (the `.tdb` extension is optional).
   # ofields -- List of field (names) in this TrailDB.
   def initialize(@path : String, @ofields : Array(String) = [] of String)
     if !path
@@ -331,6 +330,7 @@ class TrailDBConstructor
   end
 end
 
+# Load a TrailDB, including metadata and a trails iterator
 class TrailDB
   @db : Tdb
   @num_trails : UInt64
@@ -338,15 +338,29 @@ class TrailDB
   @num_fields : UInt64
   @fields : Array(String)
   @field_map : Hash(String, TdbField)
-  @buffer : Pointer(UInt64)
   @event_filter : TrailDBEventFilter | Nil
+
+  @buffer : Pointer(UInt64)
+
+  # Raw TrailDB pointer.
   getter db
+
+  # Number of trails.
   getter num_trails
+
+  # Number of events.
   getter num_events
+
+  # Number of fields.
   getter num_fields
+
+  # Field strings.
   getter fields
+
+  # The current event filter. Set to nil to remove.
   property event_filter
 
+  # Load a TrailDB at path (the `.tdb` extension is optional).
   def initialize(path : String)
     @db = LibTrailDB.tdb_init
     res = LibTrailDB.tdb_open(@db, path)
