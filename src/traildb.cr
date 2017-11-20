@@ -85,7 +85,7 @@ end
 # Crystal Library syntactic sugar
 
 # TrailDB Event, mapping field => value
-alias TrailDBEvent = Hash(String, String | Time)
+alias TrailDBEvent = Hash(String, String | Time | UInt64)
 
 # Returned when iterating over all trails
 # uuid can be accessed by destructuring in the loop
@@ -115,8 +115,9 @@ class TrailDBEventIterator
   @traildb : TrailDB
   @trail_id : UInt64
   @cursor : TdbCursor
+  @parse_timestamp : Bool
 
-  def initialize(@traildb : TrailDB, @trail_id : UInt64, event_filter : TrailDBEventFilter | Nil = nil)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64, event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
@@ -148,7 +149,7 @@ class TrailDBEventIterator
         items[@traildb.fields[idx + 1]] = @traildb.get_item_value(i)
       end
 
-      items["time"] = Time.epoch(event.value.timestamp)
+      items["time"] = @parse_timestamp ? Time.epoch(event.value.timestamp) : event.value.timestamp
       items
     end
   end
@@ -166,8 +167,9 @@ class TrailDBTrailIterator
 
   @traildb : TrailDB
   @curr : UInt64
+  @parse_timestamp : Bool
 
-  def initialize(@traildb : TrailDB, @event_filter : TrailDBEventFilter | Nil = nil)
+  def initialize(@traildb : TrailDB, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @curr = 0_u64
   end
 
@@ -175,7 +177,7 @@ class TrailDBTrailIterator
     if @curr >= @traildb.num_trails
       stop
     else
-      val = TrailDBEventIterator.new(@traildb, @curr, @event_filter)
+      val = TrailDBEventIterator.new(@traildb, @curr, @event_filter, @parse_timestamp)
       uuid = @traildb.get_uuid(@curr)
       @curr += 1
       {uuid, val}
@@ -339,8 +341,8 @@ class TrailDB
   @fields : Array(String)
   @field_map : Hash(String, TdbField)
   @event_filter : TrailDBEventFilter | Nil
-
   @buffer : Pointer(UInt64)
+  @parse_timestamp : Bool
 
   # Raw TrailDB pointer.
   getter db
@@ -359,6 +361,9 @@ class TrailDB
 
   # The current event filter. Set to nil to remove.
   property event_filter
+
+  # Whether to parse timestamp as a Time, or leave as UInt64
+  property parse_timestamp
 
   # Load a TrailDB at path (the `.tdb` extension is optional).
   def initialize(path : String)
@@ -383,6 +388,7 @@ class TrailDB
 
     @buffer = Pointer(UInt64).malloc(2)
     @event_filter = nil
+    @parse_timestamp = true
   end
 
   def finalize
@@ -401,13 +407,13 @@ class TrailDB
 
   # Return a iterator for all trails.
   def trails
-    TrailDBTrailIterator.new(self, @event_filter)
+    TrailDBTrailIterator.new(self, @event_filter, @parse_timestamp)
   end
 
   # Return a iterator for the given UUID.
   def [](uuidish : String | UInt64 | Int32)
     trail_id = uuidish.is_a?(String) ? self.get_trail_id(uuidish) : uuidish.to_u64
-    TrailDBEventIterator.new(self, trail_id, @event_filter)
+    TrailDBEventIterator.new(self, trail_id, @event_filter, @parse_timestamp)
   end
 
   # Return a field ID for given a field name or field ID.

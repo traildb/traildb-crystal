@@ -123,6 +123,24 @@ describe TrailDB do
     traildb.time_range[0].epoch.should eq 1
     traildb.time_range[1].epoch.should eq 3
   end
+
+  it "should not parse timestamps when option is false by id" do
+    traildb = TrailDB.new("testtrail.tdb")
+    traildb.parse_timestamp = false
+    trail = traildb[0]
+    events = trail.to_a
+    events.map { |event| event["time"] }.to_a.should eq [1, 2, 3]
+  end
+
+  it "should not parse timestamps when option is false when iterating" do
+    traildb = TrailDB.new("testtrail.tdb")
+    traildb.parse_timestamp = false
+    traildb.trails.each do |(uuid, trail)|
+      trail.each_with_index do |event, i|
+        event["time"].should eq i + 1
+      end
+    end
+  end
 end
 
 describe TrailDBEventFilter do
