@@ -85,7 +85,7 @@ end
 # Crystal Library syntactic sugar
 
 # TrailDB Event, mapping field => value
-alias TrailDBEvent = Hash(String, String | Time)
+alias TrailDBEventHash = Hash(String, String | Time | UInt64)
 
 # Returned when iterating over all trails
 # uuid can be accessed by destructuring in the loop
@@ -95,18 +95,36 @@ alias TrailDBEventIteratorWithUUID = Tuple(String, TrailDBEventIterator)
 # Generic field for all field-like objects. Translated into TdbField by TrailDB#field
 alias TrailDBField = String | UInt32 | Int32
 
-# Get raw byte array for a hex string
-def uuid_raw(uuid : String) : Bytes
-  uuid.hexbytes
-end
-
-# Get a hex string from a raw byte array
-def uuid_hex(uuid : Bytes)
-  uuid.hexstring
-end
-
 # Generic TrailDB exception, used all the place
 class TrailDBException < Exception
+end
+
+class TrailDBEvent
+  def initialize(@traildb : TrailDB, @event : LibTrailDB::TdbEvent*, @item : TdbItem*, @parse_timestamp : Bool = true)
+  end
+
+  def time
+    @parse_timestamp ? Time.epoch(@event.value.timestamp) : @event.value.timestamp
+  end
+
+  # Return item value for a particular field
+  def [](fieldish : TrailDBField) : String
+    item_slice = Slice.new(@item, @event.value.num_items)
+    field = @traildb.field(fieldish)
+    @traildb.get_item_value(item_slice[field - 1])
+  end
+
+  # Return the full event as a hash
+  def to_h : TrailDBEventHash
+    item_slice = Slice.new(@item, @event.value.num_items)
+    items = TrailDBEventHash.new
+    @traildb.fields.each_with_index do |field, idx|
+      items[field] = @traildb.get_item_value(item_slice[idx])
+    end
+
+    items["time"] = self.time
+    items
+  end
 end
 
 class TrailDBEventIterator
@@ -114,20 +132,17 @@ class TrailDBEventIterator
 
   @traildb : TrailDB
   @trail_id : UInt64
+  @event_filter : TrailDBEventFilter | Nil
+  @parse_timestamp : Bool
   @cursor : TdbCursor
 
-  def initialize(@traildb : TrailDB, @trail_id : UInt64, event_filter : TrailDBEventFilter | Nil = nil)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
 
-    if event_filter
-      ret = LibTrailDB.tdb_cursor_set_event_filter(@cursor, event_filter.flt)
-      if ret != 0
-        raise TrailDBException.new("cursor_set_event_filter failed")
-      end
-    end
+    self.apply_filter
   end
 
   def finalize
@@ -140,16 +155,8 @@ class TrailDBEventIterator
     if event.null?
       stop
     else
-      # Order of these two lines is crucial for some reason.
       item = LibTrailDBWrapper.tdb_event_item_pointer(event.value)
-      items = TrailDBEvent.new
-
-      item.to_slice(event.value.num_items).each_with_index do |i, idx|
-        items[@traildb.fields[idx + 1]] = @traildb.get_item_value(i)
-      end
-
-      items["time"] = Time.epoch(event.value.timestamp)
-      items
+      TrailDBEvent.new(@traildb, event, item, @parse_timestamp)
     end
   end
 
@@ -157,6 +164,21 @@ class TrailDBEventIterator
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
+    end
+
+    self.apply_filter
+  end
+
+  protected def apply_filter
+    # Use local variable to get around Nil guard
+    # https://github.com/crystal-lang/crystal/issues/477
+    event_filter = @event_filter
+
+    if event_filter
+      ret = LibTrailDB.tdb_cursor_set_event_filter(@cursor, event_filter.flt)
+      if ret != 0
+        raise TrailDBException.new("cursor_set_event_filter failed")
+      end
     end
   end
 end
@@ -166,8 +188,9 @@ class TrailDBTrailIterator
 
   @traildb : TrailDB
   @curr : UInt64
+  @parse_timestamp : Bool
 
-  def initialize(@traildb : TrailDB, @event_filter : TrailDBEventFilter | Nil = nil)
+  def initialize(@traildb : TrailDB, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @curr = 0_u64
   end
 
@@ -175,7 +198,7 @@ class TrailDBTrailIterator
     if @curr >= @traildb.num_trails
       stop
     else
-      val = TrailDBEventIterator.new(@traildb, @curr, @event_filter)
+      val = TrailDBEventIterator.new(@traildb, @curr, @event_filter, @parse_timestamp)
       uuid = @traildb.get_uuid(@curr)
       @curr += 1
       {uuid, val}
@@ -298,7 +321,7 @@ class TrailDBConstructor
     tstamp = tstamp.is_a?(Time) ? tstamp.epoch.to_u64 : tstamp.to_u64
     value_array = values.map { |v| v.bytes.to_unsafe }
     value_lengths = values.map { |v| v.size.to_u64 }
-    f = LibTrailDB.tdb_cons_add(@cons, uuid_raw(uuid), tstamp, value_array, value_lengths)
+    f = LibTrailDB.tdb_cons_add(@cons, uuid.hexbytes, tstamp, value_array, value_lengths)
     if f != 0
       raise TrailDBException.new("Too many values: #{values[f]}")
     end
@@ -339,8 +362,8 @@ class TrailDB
   @fields : Array(String)
   @field_map : Hash(String, TdbField)
   @event_filter : TrailDBEventFilter | Nil
-
   @buffer : Pointer(UInt64)
+  @parse_timestamp : Bool
 
   # Raw TrailDB pointer.
   getter db
@@ -360,6 +383,9 @@ class TrailDB
   # The current event filter. Set to nil to remove.
   property event_filter
 
+  # Whether to parse timestamp as a Time, or leave as UInt64
+  property parse_timestamp
+
   # Load a TrailDB at path (the `.tdb` extension is optional).
   def initialize(path : String)
     @db = LibTrailDB.tdb_init
@@ -375,7 +401,8 @@ class TrailDB
     @fields = [] of String
     @field_map = {} of String => TdbField
 
-    @num_fields.times.each do |field|
+    # Exclude `time` from field mapping
+    1.upto(@num_fields - 1).each do |field|
       fieldish = String.new(LibTrailDB.tdb_get_field_name(@db, field))
       @fields << fieldish
       @field_map[fieldish] = field.to_u32
@@ -383,6 +410,7 @@ class TrailDB
 
     @buffer = Pointer(UInt64).malloc(2)
     @event_filter = nil
+    @parse_timestamp = true
   end
 
   def finalize
@@ -401,13 +429,13 @@ class TrailDB
 
   # Return a iterator for all trails.
   def trails
-    TrailDBTrailIterator.new(self, @event_filter)
+    TrailDBTrailIterator.new(self, @event_filter, @parse_timestamp)
   end
 
   # Return a iterator for the given UUID.
   def [](uuidish : String | UInt64 | Int32)
     trail_id = uuidish.is_a?(String) ? self.get_trail_id(uuidish) : uuidish.to_u64
-    TrailDBEventIterator.new(self, trail_id, @event_filter)
+    TrailDBEventIterator.new(self, trail_id, @event_filter, @parse_timestamp)
   end
 
   # Return a field ID for given a field name or field ID.
@@ -451,7 +479,7 @@ class TrailDB
       raise TrailDBException.new("Trail ID out of range")
     end
 
-    raw ? String.new(uuid, 16) : uuid_hex(Slice.new(uuid, 16))
+    raw ? String.new(uuid, 16) : Slice.new(uuid, 16).hexstring
   end
 
   # Return the number of distinct values in the given field ID or field name.
@@ -471,7 +499,7 @@ class TrailDB
 
   # Return Trail ID given a UUID.
   def get_trail_id(uuid : String)
-    ret = LibTrailDB.tdb_get_trail_id(@db, uuid_raw(uuid), @buffer)
+    ret = LibTrailDB.tdb_get_trail_id(@db, uuid.hexbytes, @buffer)
     if ret != 0
       raise TrailDBException.new("UUID '#{uuid}' not found")
     end
