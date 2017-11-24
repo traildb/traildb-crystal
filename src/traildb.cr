@@ -109,7 +109,7 @@ class TrailDBEvent
 
   # Return item value for a particular field
   def [](fieldish : TrailDBField) : String
-    item_slice = @item.to_slice(@event.value.num_items)
+    item_slice = Slice.new(@item, @event.value.num_items)
     field = @traildb.field(fieldish)
     @traildb.get_item_value(item_slice[field])
   end
@@ -132,21 +132,17 @@ class TrailDBEventIterator
 
   @traildb : TrailDB
   @trail_id : UInt64
-  @cursor : TdbCursor
+  @event_filter : TrailDBEventFilter | Nil
   @parse_timestamp : Bool
+  @cursor : TdbCursor
 
-  def initialize(@traildb : TrailDB, @trail_id : UInt64, event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
 
-    if event_filter
-      ret = LibTrailDB.tdb_cursor_set_event_filter(@cursor, event_filter.flt)
-      if ret != 0
-        raise TrailDBException.new("cursor_set_event_filter failed")
-      end
-    end
+    self.apply_filter
   end
 
   def finalize
@@ -168,6 +164,21 @@ class TrailDBEventIterator
     @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
+    end
+
+    self.apply_filter
+  end
+
+  protected def apply_filter
+    # Use local variable to get around Nil guard
+    # https://github.com/crystal-lang/crystal/issues/477
+    event_filter = @event_filter
+
+    if event_filter
+      ret = LibTrailDB.tdb_cursor_set_event_filter(@cursor, event_filter.flt)
+      if ret != 0
+        raise TrailDBException.new("cursor_set_event_filter failed")
+      end
     end
   end
 end
@@ -394,7 +405,7 @@ class TrailDB
     1.upto(@num_fields - 1).each do |field|
       fieldish = String.new(LibTrailDB.tdb_get_field_name(@db, field))
       @fields << fieldish
-      @field_map[fieldish] = field.to_u32
+      @field_map[fieldish] = (field - 1).to_u32
     end
 
     @buffer = Pointer(UInt64).malloc(2)

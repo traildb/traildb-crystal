@@ -38,8 +38,6 @@ describe TrailDB do
     events = trail.map { |event| event.to_h }.to_a
     events.size.should eq 3
 
-    puts events
-
     # Assert fields individually
     events[0]["field1"].should eq "a"
     events[1]["field1"].should eq "b"
