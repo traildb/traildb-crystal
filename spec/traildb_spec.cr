@@ -35,8 +35,10 @@ describe TrailDB do
     trail.should be_a TrailDBEventIterator
 
     # Force evaluation of iterator
-    events = trail.to_a
+    events = trail.map { |event| event.to_h }.to_a
     events.size.should eq 3
+
+    puts events
 
     # Assert fields individually
     events[0]["field1"].should eq "a"
@@ -57,7 +59,7 @@ describe TrailDB do
     trail.should be_a TrailDBEventIterator
 
     # Force evaluation of iterator
-    events = trail.to_a
+    events = trail.map { |event| event.to_h }.to_a
 
     # Assert full array format
     events.should eq [
@@ -96,7 +98,7 @@ describe TrailDB do
 
   it "should have the correct fields" do
     traildb = TrailDB.new("testtrail")
-    traildb.fields.should eq ["time", "field1", "field2"]
+    traildb.fields.should eq ["field1", "field2"]
   end
 
   it "should have the correct uuids" do
@@ -129,7 +131,7 @@ describe TrailDB do
     traildb.parse_timestamp = false
     trail = traildb[0]
     events = trail.to_a
-    events.map { |event| event["time"] }.to_a.should eq [1, 2, 3]
+    events.map { |event| event.time }.to_a.should eq [1, 2, 3]
   end
 
   it "should not parse timestamps when option is false when iterating" do
@@ -137,7 +139,7 @@ describe TrailDB do
     traildb.parse_timestamp = false
     traildb.trails.each do |(uuid, trail)|
       trail.each_with_index do |event, i|
-        event["time"].should eq i + 1
+        event.time.should eq i + 1
       end
     end
   end
@@ -212,7 +214,7 @@ describe TrailDBConstructor do
     j = 1
     trail.each do |event|
       j.to_s.should eq event["field2"]
-      j.should eq event["time"].as(Time).epoch
+      j.should eq event.time.as(Time).epoch
       j += 1
     end
     j.should eq 6
@@ -234,8 +236,8 @@ describe TrailDBConstructor do
     traildb = cons.close
 
     traildb[0].each_with_index do |event, i|
-      event["time"].should be_a Time
-      event["time"].as(Time).should eq events[i][0]
+      event.time.should be_a Time
+      event.time.as(Time).should eq events[i][0]
     end
 
     traildb.time_range.should eq({events[0][0].to_utc, events[2][0].to_utc})
@@ -275,11 +277,11 @@ describe TrailDBConstructor do
     crumbs = traildb.trails.to_a.map { |(uuid, trail)| trail.to_a }
     trail = crumbs[0]
 
-    trail[0]["time"].as(Time).epoch.should eq 123
+    trail[0].time.as(Time).epoch.should eq 123
     trail[0]["field1"].should eq "a"
     trail[0]["field2"].should eq ""
 
-    trail[1]["time"].as(Time).epoch.should eq 124
+    trail[1].time.as(Time).epoch.should eq 124
     trail[1]["field1"].should eq "b"
     trail[1]["field2"].should eq "c"
   end
@@ -297,10 +299,10 @@ describe TrailDBConstructor do
     traildb.num_events.should eq 2
     trail = traildb.trails.to_a.map { |(uuid, trail)| trail.to_a }[0]
 
-    trail[0]["time"].as(Time).epoch.should eq 123
+    trail[0].time.as(Time).epoch.should eq 123
     trail[0]["field1"].should eq "foobarbaz"
 
-    trail[1]["time"].as(Time).epoch.should eq 124
+    trail[1].time.as(Time).epoch.should eq 124
     trail[1]["field1"].should eq "barquuxmoo"
 
     File.delete("testtrail2.tdb")
