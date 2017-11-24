@@ -20,11 +20,6 @@
 
   <ul>
   
-  <li class=" " data-id="github.com/traildb/traildb-crystal/toplevel" data-name="top level namespace">
-      <a href="toplevel.html">Top Level Namespace</a>
-      
-    </li>
-  
   <li class=" " data-id="github.com/traildb/traildb-crystal/Tdb" data-name="tdb">
       <a href="Tdb.html">Tdb</a>
       
@@ -115,6 +110,11 @@
       
     </li>
   
+  <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventHash" data-name="traildbeventhash">
+      <a href="TrailDBEventHash.html">TrailDBEventHash</a>
+      
+    </li>
+  
   <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventIterator" data-name="traildbeventiterator">
       <a href="TrailDBEventIterator.html">TrailDBEventIterator</a>
       
@@ -152,22 +152,17 @@
 <div id="main-content">
 <h1 class="type-name">
 
-  <span class="kind">alias</span> TrailDBEvent
+  <span class="kind">class</span> TrailDBEvent
 
 </h1>
 
 
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="TrailDBEvent.html">TrailDBEvent</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
-  <h2>Overview</h2>
-
-  <p>TrailDB Event, mapping field => value</p>
 
 
-
-  <h2>Alias Definition</h2>
-  <code>Hash(String, String | Time)</code>
 
 
 
@@ -183,7 +178,7 @@
   <h2>Defined in:</h2>
   
     
-      <a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L88" target="_blank">traildb.cr</a>
+      <a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L102" target="_blank">traildb.cr</a>
     
     <br/>
   
@@ -192,9 +187,43 @@
 
 
 
+  <h2>Constructors</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28traildb%3ATrailDB%2Cevent%3A%3A%3APointer%28LibTrailDB%3A%3ATdbEvent%29%2Citem%3A%3A%3APointer%28TdbItem%29%2Cparse_timestamp%3ABool%3Dtrue%29-class-method" class="signature"><strong>.new</strong>(traildb : TrailDB, event : ::Pointer(LibTrailDB::TdbEvent), item : ::Pointer(TdbItem), parse_timestamp : Bool = <span class="n">true</span>)</a>
+        
+      </li>
+    
+  </ul>
 
 
 
+
+
+  <h2>Instance Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%5B%5D%28fieldish%3ATrailDBField%29%3AString-instance-method" class="signature"><strong>#[]</strong>(fieldish : TrailDBField) : String</a>
+        
+          <div class="summary"><p>Return item value for a particular field</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#time-instance-method" class="signature"><strong>#time</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_h%3ATrailDBEventHash-instance-method" class="signature"><strong>#to_h</strong> : TrailDBEventHash</a>
+        
+          <div class="summary"><p>Return the full event as a hash</p></div>
+        
+      </li>
+    
+  </ul>
 
 
 
@@ -202,12 +231,106 @@
 
 <div class="methods-inherited">
   
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
 </div>
 
 
+  <h2>Constructor Detail</h2>
+  
+    <div class="entry-detail" id="new&#40;traildb:TrailDB,event:::Pointer&#40;LibTrailDB::TdbEvent&#41;,item:::Pointer&#40;TdbItem&#41;,parse_timestamp:Bool&#61;true&#41;-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(traildb : <a href="TrailDB.html">TrailDB</a>, event : ::Pointer(LibTrailDB::TdbEvent), item : ::Pointer(<a href="TdbItem.html">TdbItem</a>), parse_timestamp : Bool = <span class="n">true</span>)
+
+        <a class="method-permalink" href="#new%28traildb%3ATrailDB%2Cevent%3A%3A%3APointer%28LibTrailDB%3A%3ATdbEvent%29%2Citem%3A%3A%3APointer%28TdbItem%29%2Cparse_timestamp%3ABool%3Dtrue%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L103" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
 
 
 
+
+
+  <h2>Instance Method Detail</h2>
+  
+    <div class="entry-detail" id="&#91;&#93;&#40;fieldish:TrailDBField&#41;:String-instance-method">
+      <div class="signature">
+        
+        def <strong>[]</strong>(fieldish : <a href="TrailDBField.html">TrailDBField</a>) : String
+
+        <a class="method-permalink" href="#%5B%5D%28fieldish%3ATrailDBField%29%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return item value for a particular field</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L111" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="time-instance-method">
+      <div class="signature">
+        
+        def <strong>time</strong>
+
+        <a class="method-permalink" href="#time-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L106" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_h:TrailDBEventHash-instance-method">
+      <div class="signature">
+        
+        def <strong>to_h</strong> : <a href="TrailDBEventHash.html">TrailDBEventHash</a>
+
+        <a class="method-permalink" href="#to_h%3ATrailDBEventHash-instance-method">#</a>
+      </div>
+      
+        <div class="doc"><p>Return the full event as a hash</p></div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L118" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
 
 
 

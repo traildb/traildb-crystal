@@ -51,7 +51,11 @@ puts "Number of fields: #{traildb.num_fields}"
 traildb.trails.each do |(uuid, trail)|
   puts "Events for trail #{uuid}"
   trail.each do |event|
-    puts event
+    # Access event items by key
+    puts event["field1"]
+
+    # Or get the full hash
+    puts event.to_h
   end
 end
 ```
@@ -61,8 +65,11 @@ end
 Number of trails: 1
 Number of fields: 3
 Events for trail 12345678123456781234567812345678
+a
 {"field1" => "a", "field2" => "1", "time" => 2017-11-12 06:01:00 UTC}
+b
 {"field1" => "b", "field2" => "2", "time" => 2017-11-13 06:01:00 UTC}
+c
 {"field1" => "c", "field2" => "3", "time" => 2017-11-14 06:01:00 UTC}
 ```
 
@@ -89,7 +96,7 @@ traildb.event_filter = event_filter
 traildb.trails.each do |(uuid, trail)|
   puts "Events for trail #{uuid}"
   trail.each do |event|
-    puts event
+    puts event.to_h
   end
 end
 ```

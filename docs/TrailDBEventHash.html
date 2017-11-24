@@ -5,7 +5,7 @@
   <meta id="repository-name" content="github.com/traildb/traildb-crystal">
   <link href="css/style.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="js/doc.js"></script>
-  <title>Top Level Namespace - github.com/traildb/traildb-crystal</title>
+  <title>TrailDBEventHash - github.com/traildb/traildb-crystal</title>
 </head>
 <body>
 
@@ -19,11 +19,6 @@
   </ul>
 
   <ul>
-  
-  <li class=" current" data-id="github.com/traildb/traildb-crystal/toplevel" data-name="top level namespace">
-      <a href="toplevel.html">Top Level Namespace</a>
-      
-    </li>
   
   <li class=" " data-id="github.com/traildb/traildb-crystal/Tdb" data-name="tdb">
       <a href="Tdb.html">Tdb</a>
@@ -115,6 +110,11 @@
       
     </li>
   
+  <li class=" current" data-id="github.com/traildb/traildb-crystal/TrailDBEventHash" data-name="traildbeventhash">
+      <a href="TrailDBEventHash.html">TrailDBEventHash</a>
+      
+    </li>
+  
   <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventIterator" data-name="traildbeventiterator">
       <a href="TrailDBEventIterator.html">TrailDBEventIterator</a>
       
@@ -152,7 +152,7 @@
 <div id="main-content">
 <h1 class="type-name">
 
-  Top Level Namespace
+  <span class="kind">alias</span> TrailDBEventHash
 
 </h1>
 
@@ -160,7 +160,14 @@
 
 
 
+  <h2>Overview</h2>
 
+  <p>TrailDB Event, mapping field => value</p>
+
+
+
+  <h2>Alias Definition</h2>
+  <code>Hash(String, String | Time | UInt64)</code>
 
 
 
@@ -175,31 +182,17 @@
 
   <h2>Defined in:</h2>
   
-
-
-
-
-
-
-
-  <h2>Method Summary</h2>
-  <ul class="list-summary">
     
-      <li class="entry-summary">
-        <a href="#uuid_hex%28uuid%3ABytes%29-class-method" class="signature"><strong>uuid_hex</strong>(uuid : Bytes)</a>
-        
-          <div class="summary"><p>Get a hex string from a raw byte array</p></div>
-        
-      </li>
+      <a href="https://github.com/traildb/traildb-crystal/blob/7ac3cccfae118c39c684694f4f9e28c4c5a38df8/src/traildb.cr#L88" target="_blank">traildb.cr</a>
     
-      <li class="entry-summary">
-        <a href="#uuid_raw%28uuid%3AString%29%3ABytes-class-method" class="signature"><strong>uuid_raw</strong>(uuid : String) : Bytes</a>
-        
-          <div class="summary"><p>Get raw byte array for a hex string</p></div>
-        
-      </li>
-    
-  </ul>
+    <br/>
+  
+
+
+
+
+
+
 
 
 
@@ -213,45 +206,6 @@
 
 
 
-
-  <h2>Method Detail</h2>
-  
-    <div class="entry-detail" id="uuid_hex&#40;uuid:Bytes&#41;-class-method">
-      <div class="signature">
-        
-        def <strong>uuid_hex</strong>(uuid : Bytes)
-
-        <a class="method-permalink" href="#uuid_hex%28uuid%3ABytes%29-class-method">#</a>
-      </div>
-      
-        <div class="doc"><p>Get a hex string from a raw byte array</p></div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L104" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="uuid_raw&#40;uuid:String&#41;:Bytes-class-method">
-      <div class="signature">
-        
-        def <strong>uuid_raw</strong>(uuid : String) : Bytes
-
-        <a class="method-permalink" href="#uuid_raw%28uuid%3AString%29%3ABytes-class-method">#</a>
-      </div>
-      
-        <div class="doc"><p>Get raw byte array for a hex string</p></div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/traildb/traildb-crystal/blob/346ff7d934ba5f07749adb5c1e5ea7837ab76159/src/traildb.cr#L99" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
 
 
 

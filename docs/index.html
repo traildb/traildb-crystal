@@ -20,11 +20,6 @@
 
   <ul>
   
-  <li class=" " data-id="github.com/traildb/traildb-crystal/toplevel" data-name="top level namespace">
-      <a href="toplevel.html">Top Level Namespace</a>
-      
-    </li>
-  
   <li class=" " data-id="github.com/traildb/traildb-crystal/Tdb" data-name="tdb">
       <a href="Tdb.html">Tdb</a>
       
@@ -115,6 +110,11 @@
       
     </li>
   
+  <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventHash" data-name="traildbeventhash">
+      <a href="TrailDBEventHash.html">TrailDBEventHash</a>
+      
+    </li>
+  
   <li class=" " data-id="github.com/traildb/traildb-crystal/TrailDBEventIterator" data-name="traildbeventiterator">
       <a href="TrailDBEventIterator.html">TrailDBEventIterator</a>
       
@@ -156,7 +156,7 @@
 
 <p><img src="http://traildb.io/images/traildb_logo_512.png" alt="TrailDB Logo"/></p>
 
-<p>Official Crystal bindings for <a href="http://traildb.io/" target="_blank">TrailDB</a>, an efficient tool for storing and querying series of events. 
+<p>Official <a href="https://crystal-lang.org/" target="_blank">Crystal</a> bindings for <a href="http://traildb.io/" target="_blank">TrailDB</a>, an efficient tool for storing and querying series of events. 
 This library is heavily inspired by the <a href="https://github.com/traildb/traildb-python" target="_blank">official Python bindings</a>.
 Crystal is an excellent language for TrailDB due to its simplicity and blazing fast performance. Crystal + TrailDB = ❤️.</p>
 
@@ -200,7 +200,11 @@ puts <span class="s">&quot;Number of fields: </span><span class="i">#{</span></s
 traildb.trails.each <span class="k">do</span> <span class="o">|</span>(uuid, trail)<span class="o">|</span>
   puts <span class="s">&quot;Events for trail </span><span class="i">#{</span></span>uuid<span class="s"><span class="i">}</span>&quot;</span>
   trail.each <span class="k">do</span> <span class="o">|</span>event<span class="o">|</span>
-    puts event
+    <span class="c"># Access event items by key</span>
+    puts event[<span class="s">&quot;field1&quot;</span>]
+
+    <span class="c"># Or get the full hash</span>
+    puts event.to_h
   <span class="k">end</span>
 <span class="k">end</span></code></pre>
 
@@ -230,7 +234,7 @@ traildb.event_filter <span class="o">=</span> event_filter
 traildb.trails.each <span class="k">do</span> <span class="o">|</span>(uuid, trail)<span class="o">|</span>
   puts <span class="s">&quot;Events for trail </span><span class="i">#{</span></span>uuid<span class="s"><span class="i">}</span>&quot;</span>
   trail.each <span class="k">do</span> <span class="o">|</span>event<span class="o">|</span>
-    puts event
+    puts event.to_h
   <span class="k">end</span>
 <span class="k">end</span></code></pre>
 
