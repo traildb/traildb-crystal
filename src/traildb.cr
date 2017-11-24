@@ -111,7 +111,7 @@ class TrailDBEvent
   def [](fieldish : TrailDBField) : String
     item_slice = Slice.new(@item, @event.value.num_items)
     field = @traildb.field(fieldish)
-    @traildb.get_item_value(item_slice[field])
+    @traildb.get_item_value(item_slice[field - 1])
   end
 
   # Return the full event as a hash
@@ -405,7 +405,7 @@ class TrailDB
     1.upto(@num_fields - 1).each do |field|
       fieldish = String.new(LibTrailDB.tdb_get_field_name(@db, field))
       @fields << fieldish
-      @field_map[fieldish] = (field - 1).to_u32
+      @field_map[fieldish] = field.to_u32
     end
 
     @buffer = Pointer(UInt64).malloc(2)
