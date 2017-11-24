@@ -11,6 +11,7 @@ alias TdbChar = UInt8
 
 @[Link("traildb")]
 lib LibTrailDB
+  @[Packed]
   struct TdbEvent
     timestamp : UInt64
     num_items : UInt64
@@ -79,7 +80,7 @@ end
 # https://github.com/crystal-lang/crystal/issues/4845
 @[Link(ldflags: "-ltraildb_wrapper -L#{__DIR__}/../build")]
 lib LibTrailDBWrapper
-  fun tdb_event_item_pointer(LibTrailDB::TdbEvent) : TdbItem*
+  fun tdb_event_item_pointer(LibTrailDB::TdbEvent*) : TdbItem*
 end
 
 # Crystal Library syntactic sugar
@@ -155,7 +156,7 @@ class TrailDBEventIterator
     if event.null?
       stop
     else
-      item = LibTrailDBWrapper.tdb_event_item_pointer(event.value)
+      item = LibTrailDBWrapper.tdb_event_item_pointer(event)
       TrailDBEvent.new(@traildb, event, item, @parse_timestamp)
     end
   end
