@@ -141,6 +141,32 @@ describe TrailDB do
       end
     end
   end
+
+  it "should load old events after the cursor is incremented" do
+    traildb = TrailDB.new("testtrail.tdb")
+    traildb_events = [] of TrailDBEvent
+    traildb.trails.each do |(uuid, trail)|
+      trail.each do |event|
+        traildb_events << event
+      end
+    end
+
+    # Test interleving access
+    traildb_events[0]["field1"].should eq "a"
+    traildb_events[1]["field1"].should eq "b"
+    traildb_events[0]["field2"].should eq "1"
+
+    # Test array access
+    valid_events = [
+      {"field1" => "a", "field2" => "1", "time" => Time.epoch(1)},
+      {"field1" => "b", "field2" => "2", "time" => Time.epoch(2)},
+      {"field1" => "c", "field2" => "3", "time" => Time.epoch(3)},
+    ]
+
+    traildb_events.each_with_index do |event, index|
+      event.to_h.should eq valid_events[index]
+    end
+  end
 end
 
 describe TrailDBEventFilter do

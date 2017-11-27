@@ -100,6 +100,8 @@ alias TrailDBField = String | UInt32 | Int32
 class TrailDBException < Exception
 end
 
+# Wrapper struct for TrailDB events.
+# Can be used lazily with #[] or all fields can be fetched with #to_h
 struct TrailDBEvent
   def initialize(@traildb : TrailDB, @event : LibTrailDB::TdbEvent*, @item : TdbItem*, @parse_timestamp : Bool = true)
   end
