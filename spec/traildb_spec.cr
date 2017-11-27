@@ -1,7 +1,8 @@
 require "spec"
 require "../traildb"
 
-UUID = "12345678123456781234567812345678"
+UUID  = "12345678123456781234567812345678"
+UUID2 = "87654321876543218765432187654321"
 
 # Unfortunately before_each/after_each are global for now, have to do all set here
 Spec.before_each do
@@ -18,11 +19,21 @@ Spec.before_each do
   cons.add(UUID, 4, ["d", "4", "x"])
   cons.add(UUID, 5, ["e", "5", "x"])
   cons.close
+
+  cons = TrailDBConstructor.new("multitrail", ["field1", "field2"])
+  cons.add(UUID, 1, ["a", "1"])
+  cons.add(UUID, 2, ["b", "2"])
+  cons.add(UUID, 3, ["c", "3"])
+  cons.add(UUID2, 1, ["x", "24"])
+  cons.add(UUID2, 2, ["y", "25"])
+  cons.add(UUID2, 3, ["z", "26"])
+  cons.close
 end
 
 Spec.after_each do
   File.delete("testtrail.tdb")
   File.delete("filtertrail.tdb")
+  File.delete("multitrail.tdb")
 end
 
 describe TrailDB do
@@ -143,7 +154,7 @@ describe TrailDB do
   end
 
   it "should load old events after the cursor is incremented" do
-    traildb = TrailDB.new("testtrail.tdb")
+    traildb = TrailDB.new("multitrail.tdb")
     traildb_events = [] of TrailDBEvent
     traildb.trails.each do |(uuid, trail)|
       trail.each do |event|
@@ -152,12 +163,19 @@ describe TrailDB do
     end
 
     # Test interleving access
-    traildb_events[0]["field1"].should eq "a"
-    traildb_events[1]["field1"].should eq "b"
-    traildb_events[0]["field2"].should eq "1"
+    traildb_events[0]["field1"].should eq "x"
+    traildb_events[3]["field1"].should eq "a"
+    traildb_events[1]["field1"].should eq "y"
+    traildb_events[4]["field1"].should eq "b"
+    traildb_events[2]["field1"].should eq "z"
+    traildb_events[5]["field1"].should eq "c"
 
     # Test array access
     valid_events = [
+      {"field1" => "x", "field2" => "24", "time" => Time.epoch(1)},
+      {"field1" => "y", "field2" => "25", "time" => Time.epoch(2)},
+      {"field1" => "z", "field2" => "26", "time" => Time.epoch(3)},
+
       {"field1" => "a", "field2" => "1", "time" => Time.epoch(1)},
       {"field1" => "b", "field2" => "2", "time" => Time.epoch(2)},
       {"field1" => "c", "field2" => "3", "time" => Time.epoch(3)},
