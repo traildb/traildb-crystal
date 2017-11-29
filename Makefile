@@ -1,4 +1,4 @@
-.PHONY: default
+.PHONY: default docs
 
 default: build build/libtraildb_wrapper.a
 
