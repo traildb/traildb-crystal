@@ -137,10 +137,16 @@ class TrailDBEventIterator
   @trail_id : UInt64
   @event_filter : TrailDBEventFilter | Nil
   @parse_timestamp : Bool
-  @cursor : TdbCursor
+  @cursor : TdbCursor | Nil
+  @cursor_created_inside : Bool
 
-  def initialize(@traildb : TrailDB, @trail_id : UInt64, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
-    @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
+  def initialize(@traildb : TrailDB, @trail_id : UInt64, @cursor : TdbCursor | Nil = nil, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
+    @cursor_created_inside = @cursor.is_a?(Nil)
+
+    if @cursor_created_inside
+      @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
+    end
+
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
@@ -149,7 +155,9 @@ class TrailDBEventIterator
   end
 
   def finalize
-    LibTrailDB.tdb_cursor_free(@cursor)
+    if @cursor_created_inside
+      LibTrailDB.tdb_cursor_free(@cursor)
+    end
   end
 
   def next
@@ -164,7 +172,6 @@ class TrailDBEventIterator
   end
 
   def rewind
-    @cursor = LibTrailDB.tdb_cursor_new(@traildb.db)
     if LibTrailDB.tdb_get_trail(@cursor, @trail_id) != 0
       raise TrailDBException.new("Error getting trail #{@trail_id}")
     end
@@ -192,8 +199,9 @@ class TrailDBTrailIterator
   @traildb : TrailDB
   @curr : UInt64
   @parse_timestamp : Bool
+  @cursor : TdbCursor | Nil
 
-  def initialize(@traildb : TrailDB, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
+  def initialize(@traildb : TrailDB, @cursor : TdbCursor | Nil = nil, @event_filter : TrailDBEventFilter | Nil = nil, @parse_timestamp : Bool = true)
     @curr = 0_u64
   end
 
@@ -201,7 +209,7 @@ class TrailDBTrailIterator
     if @curr >= @traildb.num_trails
       stop
     else
-      val = TrailDBEventIterator.new(@traildb, @curr, @event_filter, @parse_timestamp)
+      val = TrailDBEventIterator.new(@traildb, @curr, @cursor, @event_filter, @parse_timestamp)
       uuid = @traildb.get_uuid(@curr)
       @curr += 1
       {uuid, val}
@@ -364,9 +372,10 @@ class TrailDB
   @num_fields : UInt64
   @fields : Array(String)
   @field_map : Hash(String, TdbField)
+  @cursor : TdbCursor | Nil
   @event_filter : TrailDBEventFilter | Nil
-  @buffer : Pointer(UInt64)
   @parse_timestamp : Bool
+  @buffer : Pointer(UInt64)
 
   # Raw TrailDB pointer.
   getter db
@@ -388,6 +397,10 @@ class TrailDB
 
   # Whether to parse timestamp as a Time, or leave as UInt64
   property parse_timestamp
+
+  # Whether to reuse the TrailDB cursor.
+  # Enabling this prevents out-of-order access of events in trails, but makes iteration more efficient.
+  getter reuse_cursor
 
   # Load a TrailDB at path (the `.tdb` extension is optional).
   def initialize(path : String)
@@ -414,10 +427,28 @@ class TrailDB
     @buffer = Pointer(UInt64).malloc(2)
     @event_filter = nil
     @parse_timestamp = true
+    @reuse_cursor = false
+    @cursor = nil
+  end
+
+  # Set whether to reuse the TrailDB cursor
+  def reuse_cursor=(reuse_cursor : Bool)
+    @reuse_cursor = reuse_cursor
+
+    if @reuse_cursor
+      @cursor = LibTrailDB.tdb_cursor_new(self.db)
+    elsif !@cursor.is_a?(Nil)
+      LibTrailDB.tdb_cursor_free(@cursor)
+      @cursor = nil
+    end
   end
 
   def finalize
     LibTrailDB.tdb_close(@db)
+
+    if !@cursor.is_a?(Nil)
+      LibTrailDB.tdb_cursor_free(@cursor)
+    end
   end
 
   # Return true if UUID or Trail ID exists in this TrailDB.
@@ -432,13 +463,13 @@ class TrailDB
 
   # Return a iterator for all trails.
   def trails
-    TrailDBTrailIterator.new(self, @event_filter, @parse_timestamp)
+    TrailDBTrailIterator.new(self, @cursor, @event_filter, @parse_timestamp)
   end
 
   # Return a iterator for the given UUID.
   def [](uuidish : String | UInt64 | Int32)
     trail_id = uuidish.is_a?(String) ? self.get_trail_id(uuidish) : uuidish.to_u64
-    TrailDBEventIterator.new(self, trail_id, @event_filter, @parse_timestamp)
+    TrailDBEventIterator.new(self, trail_id, @cursor, @event_filter, @parse_timestamp)
   end
 
   # Return a field ID for given a field name or field ID.

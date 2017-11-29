@@ -185,6 +185,25 @@ describe TrailDB do
       event.to_h.should eq valid_events[index]
     end
   end
+
+  it "should not load old events after the cursor is incremented when reuse_cursor is true" do
+    traildb = TrailDB.new("multitrail.tdb")
+    traildb.reuse_cursor = true
+    traildb_events = [] of TrailDBEvent
+    traildb.trails.each do |(uuid, trail)|
+      trail.each do |event|
+        traildb_events << event
+      end
+    end
+
+    # Test interleving access (doesn't work)
+    traildb_events[0]["field1"].should eq "a"
+    traildb_events[3]["field1"].should eq "a"
+    traildb_events[1]["field1"].should eq "b"
+    traildb_events[4]["field1"].should eq "b"
+    traildb_events[2]["field1"].should eq "c"
+    traildb_events[5]["field1"].should eq "c"
+  end
 end
 
 describe TrailDBEventFilter do
