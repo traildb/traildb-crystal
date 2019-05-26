@@ -107,7 +107,7 @@ struct TrailDBEvent
   end
 
   def time
-    @parse_timestamp ? Time.epoch(@event.value.timestamp) : @event.value.timestamp
+    @parse_timestamp ? Time.unix(@event.value.timestamp) : @event.value.timestamp
   end
 
   # Return item value for a particular field
@@ -329,7 +329,7 @@ class TrailDBConstructor
   # tstamp -- Timestamp of this event (datetime or integer).
   # values -- value of each field.
   def add(uuid : String, tstamp : Time | UInt64 | Int32, values : Array(String))
-    tstamp = tstamp.is_a?(Time) ? tstamp.epoch.to_u64 : tstamp.to_u64
+    tstamp = tstamp.is_a?(Time) ? tstamp.to_unix.to_u64 : tstamp.to_u64
     value_array = values.map { |v| v.bytes.to_unsafe }
     value_lengths = values.map { |v| v.size.to_u64 }
     f = LibTrailDB.tdb_cons_add(@cons, uuid.hexbytes, tstamp, value_array, value_lengths)
@@ -542,8 +542,8 @@ class TrailDB
 
   # Return the time range covered by this TrailDB.
   def time_range
-    tmin = Time.epoch(self.min_timestamp)
-    tmax = Time.epoch(self.max_timestamp)
+    tmin = Time.unix(self.min_timestamp)
+    tmax = Time.unix(self.max_timestamp)
     {tmin, tmax}
   end
 

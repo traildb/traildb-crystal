@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.28.0">
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript">
+  CrystalDoc.base_path = "";
+</script>
+
   <meta id="repository-name" content="github.com/traildb/traildb-crystal">
-  <link href="css/style.css" rel="stylesheet" type="text/css" />
-  <script type="text/javascript" src="js/doc.js"></script>
   <title>README - github.com/traildb/traildb-crystal</title>
 </head>
 <body>
 
-<div id="types-list">
-  <div id="search-box">
-    <input type="search" id="search-input" placeholder="Search...">
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="repository-links">
+      <a href="index.html">README</a>
+    </div>
   </div>
 
-  <ul>
-    <li class="current"><a href="index.html">README</a></li>
-  </ul>
+  <div class="search-results" class="hidden">
+    <ul class="search-list"></ul>
+  </div>
 
-  <ul>
+  <div class="types-list">
+    <ul>
   
   <li class=" " data-id="github.com/traildb/traildb-crystal/Tdb" data-name="tdb">
       <a href="Tdb.html">Tdb</a>
@@ -147,9 +163,11 @@
   
 </ul>
 
+  </div>
 </div>
 
-<div id="main-content">
+
+<div class="main-content">
 <p><a href="https://travis-ci.org/traildb/traildb-crystal" target="_blank"><img src="https://travis-ci.org/traildb/traildb-crystal.svg?branch=master" alt="Build Status"/></a></p>
 
 <h1>TrailDB Crystal Bindings</h1>
@@ -164,7 +182,7 @@ Crystal is an excellent language for TrailDB due to its simplicity and blazing f
 
 <ol><li>Install <a href="https://github.com/traildb/traildb" target="_blank"><code>traildb</code></a> to your system. You can install the binaries for your system or compile it from source. <a href="https://github.com/traildb/traildb#installing-binaries" target="_blank">Detailed instructions here.</a></li><li>Add this to your <code>shard.yml</code></li></ol>
 
-<pre><code class='language-yaml'>dependencies:
+<pre><code class="language-yaml">dependencies:
   traildb:
     github: traildb/traildb-crystal</code></pre>
 
@@ -176,7 +194,7 @@ Crystal is an excellent language for TrailDB due to its simplicity and blazing f
 
 <h4>Code</h4>
 
-<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
 
 cons <span class="o">=</span> <span class="t">TrailDBConstructor</span>.<span class="k">new</span>(<span class="s">&quot;testtrail.tdb&quot;</span>, [<span class="s">&quot;field1&quot;</span>, <span class="s">&quot;field2&quot;</span>])
 
@@ -190,15 +208,15 @@ cons.close</code></pre>
 
 <h4>Code</h4>
 
-<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
 
 traildb <span class="o">=</span> <span class="t">TrailDB</span>.<span class="k">new</span>(<span class="s">&quot;testtrail.tdb&quot;</span>)
 
-puts <span class="s">&quot;Number of trails: </span><span class="i">#{</span></span>traildb.num_trails<span class="s"><span class="i">}</span>&quot;</span>
-puts <span class="s">&quot;Number of fields: </span><span class="i">#{</span></span>traildb.num_fields<span class="s"><span class="i">}</span>&quot;</span>
+puts <span class="s">&quot;Number of trails: </span><span class="i">#{</span>traildb.num_trails<span class="i">}</span><span class="s">&quot;</span>
+puts <span class="s">&quot;Number of fields: </span><span class="i">#{</span>traildb.num_fields<span class="i">}</span><span class="s">&quot;</span>
 
 traildb.trails.each <span class="k">do</span> <span class="o">|</span>(uuid, trail)<span class="o">|</span>
-  puts <span class="s">&quot;Events for trail </span><span class="i">#{</span></span>uuid<span class="s"><span class="i">}</span>&quot;</span>
+  puts <span class="s">&quot;Events for trail </span><span class="i">#{</span>uuid<span class="i">}</span><span class="s">&quot;</span>
   trail.each <span class="k">do</span> <span class="o">|</span>event<span class="o">|</span>
     <span class="c"># Access event items by key</span>
     puts event[<span class="s">&quot;field1&quot;</span>]
@@ -218,7 +236,7 @@ traildb.trails.each <span class="k">do</span> <span class="o">|</span>(uuid, tra
 
 <h4>Code</h4>
 
-<pre><code class='language-crystal'>events <span class="o">=</span> traildb[<span class="n">0</span>].to_a
+<pre><code class="language-crystal">events <span class="o">=</span> traildb[<span class="n">0</span>].to_a
 <span class="c"># or</span>
 events <span class="o">=</span> traildb[<span class="s">&quot;12345678123456781234567812345678&quot;</span>].to_a</code></pre>
 
@@ -226,13 +244,13 @@ events <span class="o">=</span> traildb[<span class="s">&quot;123456781234567812
 
 <h4>Code</h4>
 
-<pre><code class='language-crystal'><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;traildb&quot;</span>
 
 event_filter <span class="o">=</span> traildb.create_filter([[{<span class="s">&quot;field1&quot;</span>, <span class="s">&quot;a&quot;</span>}]])
 traildb.event_filter <span class="o">=</span> event_filter
 
 traildb.trails.each <span class="k">do</span> <span class="o">|</span>(uuid, trail)<span class="o">|</span>
-  puts <span class="s">&quot;Events for trail </span><span class="i">#{</span></span>uuid<span class="s"><span class="i">}</span>&quot;</span>
+  puts <span class="s">&quot;Events for trail </span><span class="i">#{</span>uuid<span class="i">}</span><span class="s">&quot;</span>
   trail.each <span class="k">do</span> <span class="o">|</span>event<span class="o">|</span>
     puts event.to_h
   <span class="k">end</span>

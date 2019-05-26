@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.0](https://github.com/traildb/traildb-crystal/releases/tag/v0.2.0) - 2019-05-26
+
+- Breaking: changed Time.epoch => Time.unix, Time#epoch => Time#to_unix to work with Crystal 0.28.0
+
 ## [0.1.3](https://github.com/traildb/traildb-crystal/releases/tag/v0.1.3) - 2017-11-24
 
 - Added TrailDB#reuse_cursor bool for a speed boost when iterating
