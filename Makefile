@@ -18,3 +18,6 @@ docs:
 	rm -rf docs
 	crystal docs
 	mv doc docs
+
+test:
+	crystal spec

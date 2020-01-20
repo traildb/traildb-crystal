@@ -1,5 +1,5 @@
 require "spec"
-require "../traildb"
+require "../src/traildb"
 
 UUID  = "12345678123456781234567812345678"
 UUID2 = "87654321876543218765432187654321"
@@ -286,9 +286,9 @@ describe TrailDBConstructor do
   it "should create with Time" do
     cons = TrailDBConstructor.new("testtrail", ["field1"])
 
-    events = [{Time.new(2016, 1, 1, 1, 1).to_utc, ["1"]},
-              {Time.new(2016, 1, 1, 1, 2).to_utc, ["2"]},
-              {Time.new(2016, 1, 1, 1, 3).to_utc, ["3"]}]
+    events = [{Time.utc(2016, 1, 1, 1, 1).to_utc, ["1"]},
+              {Time.utc(2016, 1, 1, 1, 2).to_utc, ["2"]},
+              {Time.utc(2016, 1, 1, 1, 3).to_utc, ["3"]}]
 
     events.each do |(time, values)|
       cons.add(UUID, time, values)

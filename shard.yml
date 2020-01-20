@@ -1,5 +1,5 @@
 name: traildb
-version: 0.2.0
+version: 0.2.1
 
 authors:
   - Joey Robert <joey@joeyrobert.org>
@@ -11,6 +11,6 @@ targets:
 scripts:
   postinstall: make
 
-crystal: 0.28.0
+crystal: 0.32.1
 
 license: MIT
